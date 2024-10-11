@@ -9,7 +9,7 @@ contract LandTitleRegistry is TitleDeedTokenization {
         bool isRegistered;
         address ownerAddress;
         string location;
-        uint256 area;
+        string area;
         string documentHash;
     }
 
@@ -17,7 +17,7 @@ contract LandTitleRegistry is TitleDeedTokenization {
     address public government;
     Login public loginContract;
 
-    event LandTitleUpdated(uint256 indexed id, address indexed newOwnerAddress, string newLocation, uint256 newArea, string newDocumentHash);
+    event LandTitleUpdated(uint256 indexed id, address indexed newOwnerAddress, string newLocation, string newArea, string newDocumentHash);
 
     constructor(address _loginContract, address initialOwner) TitleDeedTokenization(initialOwner) {
         government = msg.sender;
@@ -38,11 +38,13 @@ contract LandTitleRegistry is TitleDeedTokenization {
         uint256 _id,
         address _ownerAddress,
         string memory _location,
-        uint256 _area,
-        string memory _documentHash
+        string memory _area
     ) public onlyGovernment onlyRegistered {
         require(!landTitles[_id].isRegistered, "Land title already registered");
-        require(_area > 0, "Area must be greater than 0");
+        require(bytes(_area).length > 0, "Area cannot be empty");
+
+        // Generate a random document hash
+        string memory _documentHash = generateDocumentHash();
 
         landTitles[_id] = LandTitle({
             isRegistered: true,
@@ -52,40 +54,34 @@ contract LandTitleRegistry is TitleDeedTokenization {
             documentHash: _documentHash
         });
 
+        // Mint a token for the land title
         mintToken(_ownerAddress, _documentHash);
     }
 
-    function updateLandDetails(
-        uint256 _id,
-        address _newOwnerAddress,
-        string memory _newLocation,
-        uint256 _newArea,
-        string memory _newDocumentHash
-    ) public onlyGovernment onlyRegistered {
-        require(landTitles[_id].isRegistered, "Land title not registered");
-        require(_newArea > 0, "Area must be greater than 0");
-
-        LandTitle storage title = landTitles[_id];
-        title.ownerAddress = _newOwnerAddress;
-        title.location = _newLocation;
-        title.area = _newArea;
-        title.documentHash = _newDocumentHash;
-
-        // Update the token document hash
-        uint256 tokenId = _id;
-        tokenDocumentHashes[tokenId] = _newDocumentHash;
-
-        emit LandTitleUpdated(_id, _newOwnerAddress, _newLocation, _newArea, _newDocumentHash);
+    function generateDocumentHash() internal returns (string memory) {
+        // Generate a random document hash (e.g., using a hash function)
+        // For demonstration purposes, we'll use a simple random number
+        uint256 randomNum = uint256(keccak256(abi.encodePacked(block.timestamp)));
+        return toString(randomNum);
     }
 
-    function getLandDetails(uint256 _id) public view returns (
-        address ownerAddress,
-        string memory location,
-        uint256 area,
-        string memory documentHash
-    ) {
-        LandTitle storage title = landTitles[_id];
-        require(title.isRegistered, "Land title not registered");
-        return (title.ownerAddress, title.location, title.area, title.documentHash);
+    function toString(uint256 value) internal pure returns (string memory) {
+        // Convert uint256 to string
+        if (value == 0) {
+            return "0";
+        }
+        uint256 temp = value;
+        uint256 digits;
+        while (temp != 0) {
+            digits++;
+            temp /= 10;
+        }
+        bytes memory buffer = new bytes(digits);
+        while (value != 0) {
+            digits -= 1;
+            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
+            value /= 10;
+        }
+        return string(buffer);
     }
 }

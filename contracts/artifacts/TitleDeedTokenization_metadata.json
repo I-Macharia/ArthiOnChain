@@ -288,6 +288,32 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "_walletAddress",
+						"type": "address"
+					}
+				],
+				"name": "connectWallet",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "connectedWallet",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "uint256",
 						"name": "tokenId",
 						"type": "uint256"
@@ -545,6 +571,25 @@
 						"internalType": "string",
 						"name": "",
 						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
+				"name": "tokenExists",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
 					}
 				],
 				"stateMutability": "view",
@@ -869,11 +914,11 @@
 			]
 		},
 		"contracts/tokenize.sol": {
-			"keccak256": "0x4468518604f6dfb7af3896c6be1fa822e5ee7f42d4daff93f38c2989475e69ca",
+			"keccak256": "0x8d8e41ab01e85a83a00951e245c266ede55971130fad836647d069c27863ef4b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://b22709d3d4d671fc613d16d72c49c8348c7795e4716fa7ac49235f6cec6a28b2",
-				"dweb:/ipfs/QmUbwbksbqt84AZ95jUKADpVpGWhzRkFeZLFJXsmmCMhM3"
+				"bzz-raw://61cd98816bcbe966dad08ae8329c5ae4b948b152edb63cd2ed532e4f61883bd7",
+				"dweb:/ipfs/Qma68GYrdWbMC3iRdenU9Mq7JhVRpoRkWegFKV1cavi5Yy"
 			]
 		}
 	},
