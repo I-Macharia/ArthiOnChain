@@ -7,9 +7,14 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract TitleDeedTokenization is ERC721, Ownable {
     uint256 public nextTokenId;
     mapping(uint256 => string) public tokenDocumentHashes;
+    address public connectedWallet;
 
     constructor(address initialOwner) ERC721("TitleDeedToken", "TDT") Ownable(initialOwner) {
         // Initialize the Ownable contract with the initialOwner address
+    }
+
+    function connectWallet(address _walletAddress) public {
+        connectedWallet = _walletAddress;
     }
 
     // Function to mint a new token for a land title

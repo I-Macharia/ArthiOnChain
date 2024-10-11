@@ -3,22 +3,26 @@ pragma solidity ^0.8.0;
 
 contract Login {
     mapping(address => bool) public isRegistered;
-
-    modifier onlyRegistered() {
-        require(isRegistered[msg.sender], "You need to be a registered user");
-        _;
-    }
+    address public connectedWallet;
 
     event UserRegistered(address indexed userAddress);
 
-    function register() public {
-        require(!isRegistered[msg.sender], "User already registered");
-        isRegistered[msg.sender] = true;
+    constructor() {
+        connectedWallet = address(0); // Initialize connected wallet address to 0
+    }
 
-        emit UserRegistered(msg.sender);
+    function connectWallet(address _walletAddress) public {
+        connectedWallet = _walletAddress;
+    }
+
+    function register() public {
+        require(!isRegistered[connectedWallet], "User  already registered");
+        isRegistered[connectedWallet] = true;
+
+        emit UserRegistered(connectedWallet);
     }
 
     function isUserRegistered() public view returns (bool) {
-        return isRegistered[msg.sender];
+        return isRegistered[connectedWallet];
     }
 }

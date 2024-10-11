@@ -288,6 +288,32 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "_walletAddress",
+						"type": "address"
+					}
+				],
+				"name": "connectWallet",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "connectedWallet",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "uint256",
 						"name": "tokenId",
 						"type": "uint256"
@@ -888,11 +914,11 @@
 			]
 		},
 		"contracts/tokenize.sol": {
-			"keccak256": "0xe7828bec8fbbee1f00f0d31ed20b9f40e78af0f1f9bd813ae2c8b588b673e6e6",
+			"keccak256": "0x8d8e41ab01e85a83a00951e245c266ede55971130fad836647d069c27863ef4b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://abd45979b29ec83febc2ea83a052e5499261e6e7e309f6767e8d3a8302201e6c",
-				"dweb:/ipfs/QmXb8TWv6CXdZHKPLVcnEiyAa8fmJTwerzjrYg8fMTdMqa"
+				"bzz-raw://61cd98816bcbe966dad08ae8329c5ae4b948b152edb63cd2ed532e4f61883bd7",
+				"dweb:/ipfs/Qma68GYrdWbMC3iRdenU9Mq7JhVRpoRkWegFKV1cavi5Yy"
 			]
 		}
 	},

@@ -1,13 +1,31 @@
 {
   "name": "Login",
-  "address": "0xc705005453747de36f1b6e0f1742b2ebeb9274c9",
+  "address": "0x01c1b5873e0a80275aa9503a7f039d5e32a61a7f",
   "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_walletAddress",
+          "type": "address"
+        }
+      ],
+      "name": "connectWallet",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
     {
       "inputs": [],
       "name": "register",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
+    },
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
     },
     {
       "anonymous": false,
@@ -21,6 +39,19 @@
       ],
       "name": "UserRegistered",
       "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "connectedWallet",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
       "inputs": [
@@ -56,5 +87,5 @@
     }
   ],
   "filePath": "ArthiOnChain/contracts/LoginContract.sol",
-  "pinnedAt": 1728689106765
+  "pinnedAt": 1728689658958
 }

@@ -1,6 +1,6 @@
 {
-  "name": "TitleDeedTokenization",
-  "address": "0x963886fb4759d509f3b75ffdfdcb1f53a5e52c7a",
+  "name": "LandTitleRegistry",
+  "address": "0x5b187060dde5a745d2ed625fdb607e49857e9481",
   "abi": [
     {
       "inputs": [
@@ -35,6 +35,24 @@
     },
     {
       "inputs": [
+        {
+          "internalType": "address",
+          "name": "_walletAddress",
+          "type": "address"
+        }
+      ],
+      "name": "connectWallet",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_loginContract",
+          "type": "address"
+        },
         {
           "internalType": "address",
           "name": "initialOwner",
@@ -151,6 +169,24 @@
       "inputs": [
         {
           "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "documentHash",
+          "type": "string"
+        }
+      ],
+      "name": "mintToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
           "name": "owner",
           "type": "address"
         }
@@ -220,22 +256,41 @@
       "type": "event"
     },
     {
+      "anonymous": false,
       "inputs": [
         {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
           "internalType": "address",
-          "name": "to",
+          "name": "newOwnerAddress",
           "type": "address"
         },
         {
+          "indexed": false,
           "internalType": "string",
-          "name": "documentHash",
+          "name": "newLocation",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "newArea",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "newDocumentHash",
           "type": "string"
         }
       ],
-      "name": "mintToken",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
+      "name": "LandTitleUpdated",
+      "type": "event"
     },
     {
       "anonymous": false,
@@ -255,6 +310,34 @@
       ],
       "name": "OwnershipTransferred",
       "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_ownerAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "_location",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_area",
+          "type": "string"
+        }
+      ],
+      "name": "registerLandTitle",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
       "inputs": [],
@@ -413,6 +496,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "connectedWallet",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256",
@@ -451,6 +547,19 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "government",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -469,6 +578,58 @@
           "internalType": "bool",
           "name": "",
           "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "landTitles",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "isRegistered",
+          "type": "bool"
+        },
+        {
+          "internalType": "address",
+          "name": "ownerAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "location",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "area",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "documentHash",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "loginContract",
+      "outputs": [
+        {
+          "internalType": "contract Login",
+          "name": "",
+          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -622,6 +783,6 @@
       "type": "function"
     }
   ],
-  "filePath": "ArthiOnChain/contracts/tokenize.sol",
-  "pinnedAt": 1728689244879
+  "filePath": "ArthiOnChain/contracts/titledeeds.sol",
+  "pinnedAt": 1728689742988
 }
