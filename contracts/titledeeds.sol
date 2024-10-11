@@ -9,7 +9,7 @@ contract LandTitleRegistry is TitleDeedTokenization {
         bool isRegistered;
         address ownerAddress;
         string location;
-        uint256 area;
+        string area;
         string documentHash;
     }
 
@@ -17,7 +17,7 @@ contract LandTitleRegistry is TitleDeedTokenization {
     address public government;
     Login public loginContract;
 
-    event LandTitleUpdated(uint256 indexed id, address indexed newOwnerAddress, string newLocation, uint256 newArea, string newDocumentHash);
+    event LandTitleUpdated(uint256 indexed id, address indexed newOwnerAddress, string newLocation, string newArea, string newDocumentHash);
 
     constructor(address _loginContract, address initialOwner) TitleDeedTokenization(initialOwner) {
         government = msg.sender;
@@ -38,11 +38,11 @@ contract LandTitleRegistry is TitleDeedTokenization {
         uint256 _id,
         address _ownerAddress,
         string memory _location,
-        uint256 _area,
+        string memory _area,
         string memory _documentHash
     ) public onlyGovernment onlyRegistered {
         require(!landTitles[_id].isRegistered, "Land title already registered");
-        require(_area > 0, "Area must be greater than 0");
+        require(bytes(_area).length > 0, "Area cannot be empty");
 
         landTitles[_id] = LandTitle({
             isRegistered: true,
@@ -59,11 +59,11 @@ contract LandTitleRegistry is TitleDeedTokenization {
         uint256 _id,
         address _newOwnerAddress,
         string memory _newLocation,
-        uint256 _newArea,
+        string memory _newArea,
         string memory _newDocumentHash
     ) public onlyGovernment onlyRegistered {
         require(landTitles[_id].isRegistered, "Land title not registered");
-        require(_newArea > 0, "Area must be greater than 0");
+        require(bytes(_newArea).length > 0, "Area cannot be empty");
 
         LandTitle storage title = landTitles[_id];
         title.ownerAddress = _newOwnerAddress;
@@ -81,7 +81,7 @@ contract LandTitleRegistry is TitleDeedTokenization {
     function getLandDetails(uint256 _id) public view returns (
         address ownerAddress,
         string memory location,
-        uint256 area,
+        string memory area,
         string memory documentHash
     ) {
         LandTitle storage title = landTitles[_id];

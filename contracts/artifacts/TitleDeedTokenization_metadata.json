@@ -558,6 +558,25 @@
 						"type": "uint256"
 					}
 				],
+				"name": "tokenExists",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "tokenId",
+						"type": "uint256"
+					}
+				],
 				"name": "tokenURI",
 				"outputs": [
 					{
@@ -869,11 +888,11 @@
 			]
 		},
 		"contracts/tokenize.sol": {
-			"keccak256": "0x4468518604f6dfb7af3896c6be1fa822e5ee7f42d4daff93f38c2989475e69ca",
+			"keccak256": "0xe7828bec8fbbee1f00f0d31ed20b9f40e78af0f1f9bd813ae2c8b588b673e6e6",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://b22709d3d4d671fc613d16d72c49c8348c7795e4716fa7ac49235f6cec6a28b2",
-				"dweb:/ipfs/QmUbwbksbqt84AZ95jUKADpVpGWhzRkFeZLFJXsmmCMhM3"
+				"bzz-raw://abd45979b29ec83febc2ea83a052e5499261e6e7e309f6767e8d3a8302201e6c",
+				"dweb:/ipfs/QmXb8TWv6CXdZHKPLVcnEiyAa8fmJTwerzjrYg8fMTdMqa"
 			]
 		}
 	},

@@ -21,15 +21,20 @@ contract TitleDeedTokenization is ERC721, Ownable {
         tokenDocumentHashes[tokenId] = documentHash;
     }
 
+        // Function to check if a token exists
+    function tokenExists(uint256 tokenId) public view returns (bool) {
+        return ERC721.ownerOf(tokenId) != address(0);
+    }
+
     // Function to get the document hash of a token
     function getDocumentHash(uint256 tokenId) public view returns (string memory) {
-        require(balanceOf(ownerOf(tokenId)) > 0, "Token does not exist"); 
+        require(tokenExists(tokenId), "Token does not exist"); 
         return tokenDocumentHashes[tokenId];
     }
 
     // Function to burn a token
     function burnToken(uint256 tokenId) public onlyOwner {
-        require(balanceOf(ownerOf(tokenId)) > 0, "Token does not exist"); 
+        require(tokenExists(tokenId), "Token does not exist"); 
         _burn(tokenId);
         delete tokenDocumentHashes[tokenId];
     }
