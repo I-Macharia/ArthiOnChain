@@ -4,16 +4,16 @@ export default defineConfig({
   out: 'src/generated.ts',
   contracts: [
     {
-      name: 'Contract1',
+      name: 'Login',
       abi: './artifacts/Contract1.abi.json',
     },
     {
-      name: 'Contract2',
+      name: 'LandTitleRegistry',
       abi: './artifacts/Contract2.abi.json',
     },
     {
       name: 'TitleDeedTokenization',
-      abi: './artifacts/contracts/tokenize.sol/TitleDeedTokenization.json',
+      abi: './artifacts/contracts/tokenize/TitleDeedTokenization.json',
     },
   ],
   plugins: [],
