@@ -18,6 +18,7 @@
     "wagmi": "latest"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@nomiclabs/hardhat-waffle": "^2.0.6",
     "@openzeppelin/contracts": "^5.0.2",
@@ -30,7 +31,7 @@
     "encoding": "^0.1.13",
     "ethereum-waffle": "^4.0.10",
     "ethers": "^6.13.3",
-    "hardhat": "^0.0.7",
+    "hardhat": "^2.22.13",
     "lokijs": "^1.5.12",
     "pino-pretty": "^10.3.1",
     "supports-color": "^9.4.0",
