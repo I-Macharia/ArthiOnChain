@@ -58,7 +58,7 @@ contract LandTitleRegistry is TitleDeedTokenization {
         mintToken(_ownerAddress, _documentHash);
     }
 
-    function generateDocumentHash() internal returns (string memory) {
+    function generateDocumentHash() internal view returns (string memory) {
         // Generate a random document hash (e.g., using a hash function)
         // For demonstration purposes, we'll use a simple random number
         uint256 randomNum = uint256(keccak256(abi.encodePacked(block.timestamp)));
