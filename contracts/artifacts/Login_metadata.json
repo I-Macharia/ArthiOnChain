@@ -6,11 +6,6 @@
 	"output": {
 		"abi": [
 			{
-				"inputs": [],
-				"stateMutability": "nonpayable",
-				"type": "constructor"
-			},
-			{
 				"anonymous": false,
 				"inputs": [
 					{
@@ -22,32 +17,6 @@
 				],
 				"name": "UserRegistered",
 				"type": "event"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "_walletAddress",
-						"type": "address"
-					}
-				],
-				"name": "connectWallet",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [],
-				"name": "connectedWallet",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
 			},
 			{
 				"inputs": [
@@ -117,11 +86,11 @@
 	},
 	"sources": {
 		"contracts/LoginContract.sol": {
-			"keccak256": "0xcee414f6ebbd52e951b24c228bc08cc8fe2f3831145da031e588c360f025b7a6",
+			"keccak256": "0x0957742a1b92e770e38eba837b3c0dfb2dcdc3c695fae4bc54214e5102bacbc2",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://1b42c4ba47a1ff96b97360ec1c37e1747d9a1755198d9bbfc18cc729dab3d6fd",
-				"dweb:/ipfs/QmYp82XyugqJqk3PbGuretC79LAu9JsmsaxeqhQDp8cB8a"
+				"bzz-raw://3f58aa4f9f986111fa112152ad4fb692ec0371b9b0aa6d62014cdcd9f98cf3bc",
+				"dweb:/ipfs/QmXgkwW1zemKoy9yUVoz4YtBPSnJny6jXm69i7y3vwsDKq"
 			]
 		}
 	},
