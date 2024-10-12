@@ -1,20 +1,13 @@
-import { defineConfig } from '@wagmi/cli';
+import { useContract } from 'wagmi';
+import LandTitleRegistry from "./artifacts/contracts/titledeeds.sol/LandTitleRegistry.json";
 
-export default defineConfig({
-  out: 'src/generated.ts',
-  contracts: [
-    {
-      name: 'Login',
-      abi: './artifacts/Contract1.abi.json',
-    },
-    {
-      name: 'LandTitleRegistry',
-      abi: './artifacts/Contract2.abi.json',
-    },
-    {
-      name: 'TitleDeedTokenization',
-      abi: './artifacts/contracts/tokenize/TitleDeedTokenization.json',
-    },
-  ],
-  plugins: [],
+// ...
+
+const { data, error, isLoading } = useContract({
+  address: '0xYOUR_CONTRACT_ADDRESS',
+  abi: LandTitleRegistry.abi,
+  functionName: 'getLandTitleOwner',
+  args: ['landTitleId'],
 });
+
+
