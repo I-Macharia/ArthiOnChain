@@ -1,0 +1,48 @@
+{
+	"compiler": {
+		"version": "0.8.23+commit.f704f362"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"author": "Solady (https://github.com/vectorized/solady/blob/main/src/utils/SignatureCheckerLib.sol)Modified from OpenZeppelin (https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/SignatureChecker.sol)",
+			"details": "Note: - The signature checking functions use the ecrecover precompile (0x1). - The `bytes memory signature` variants use the identity precompile (0x4)   to copy memory internally. - Unlike ECDSA signatures, contract signatures are revocable. - As of Solady version 0.0.134, all `bytes signature` variants accept both   regular 65-byte `(r, s, v)` and EIP-2098 `(r, vs)` short form signatures.   See: https://eips.ethereum.org/EIPS/eip-2098   This is for calldata efficiency on smart accounts prevalent on L2s. WARNING! Do NOT use signatures as unique identifiers: - Use a nonce in the digest to prevent replay attacks on the same contract. - Use EIP-712 for the digest to prevent replay attacks across different chains and contracts.   EIP-712 also enables readable signing of typed data for better user safety. This implementation does NOT check if a signature is non-malleable.",
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"notice": "Signature verification helper that supports both ECDSA signatures from EOAs and ERC1271 signatures from smart contract wallets like Argent and Gnosis safe.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/SignatureCheckerLib.sol": "SignatureCheckerLib"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/SignatureCheckerLib.sol": {
+			"keccak256": "0x27b0ca5a1ce38ff4a36abe0748331efce1304ce76064c10159dbf8988509827d",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://f14e62f4c5c0aac6c467031693ca65ffd97626f4208857e3a1742a082cfae330",
+				"dweb:/ipfs/QmT929ELv3AApoUbpuJBbARsesWKxRDeekpg7UrVuxMx6k"
+			]
+		}
+	},
+	"version": 1
+}

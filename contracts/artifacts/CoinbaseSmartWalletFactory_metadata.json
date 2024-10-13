@@ -1,0 +1,312 @@
+{
+	"compiler": {
+		"version": "0.8.23+commit.f704f362"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "implementation_",
+						"type": "address"
+					}
+				],
+				"stateMutability": "payable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [],
+				"name": "OwnerRequired",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes[]",
+						"name": "owners",
+						"type": "bytes[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "nonce",
+						"type": "uint256"
+					}
+				],
+				"name": "createAccount",
+				"outputs": [
+					{
+						"internalType": "contract CoinbaseSmartWallet",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes[]",
+						"name": "owners",
+						"type": "bytes[]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "nonce",
+						"type": "uint256"
+					}
+				],
+				"name": "getAddress",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "implementation",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "initCodeHash",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"author": "Coinbase (https://github.com/coinbase/smart-wallet)Solady (https://github.com/vectorized/solady/blob/main/src/accounts/ERC4337Factory.sol)",
+			"kind": "dev",
+			"methods": {
+				"constructor": {
+					"params": {
+						"implementation_": "The address of the CoinbaseSmartWallet implementation which new accounts will proxy to."
+					}
+				},
+				"createAccount(bytes[],uint256)": {
+					"details": "Deployed as a ERC-1967 proxy that's implementation is `this.implementation`.",
+					"params": {
+						"nonce": "The nonce of the account, a caller defined value which allows multiple accounts               with the same `owners` to exist at different addresses.",
+						"owners": "Array of initial owners. Each item should be an ABI encoded address or 64 byte public key."
+					},
+					"returns": {
+						"account": "The address of the ERC-1967 proxy created with inputs `owners`, `nonce`, and                 `this.implementation`."
+					}
+				},
+				"getAddress(bytes[],uint256)": {
+					"params": {
+						"nonce": "The nonce provided to `createAccount()`.",
+						"owners": "Array of initial owners. Each item should be an ABI encoded address or 64 byte public key."
+					},
+					"returns": {
+						"_0": "The predicted account deployment address."
+					}
+				},
+				"initCodeHash()": {
+					"returns": {
+						"_0": "The initialization code hash."
+					}
+				}
+			},
+			"title": "Coinbase Smart Wallet Factory",
+			"version": 1
+		},
+		"userdoc": {
+			"errors": {
+				"OwnerRequired()": [
+					{
+						"notice": "Thrown when trying to create a new `CoinbaseSmartWallet` account without any owner."
+					}
+				]
+			},
+			"kind": "user",
+			"methods": {
+				"constructor": {
+					"notice": "Factory constructor used to initialize the implementation address to use for future         CoinbaseSmartWallet deployments."
+				},
+				"createAccount(bytes[],uint256)": {
+					"notice": "Returns the deterministic address for a CoinbaseSmartWallet created with `owners` and `nonce`         deploys and initializes contract if it has not yet been created."
+				},
+				"getAddress(bytes[],uint256)": {
+					"notice": "Returns the deterministic address of the account that would be created by `createAccount`."
+				},
+				"implementation()": {
+					"notice": "Address of the ERC-4337 implementation used as implementation for new accounts."
+				},
+				"initCodeHash()": {
+					"notice": "Returns the initialization code hash of the account:         a ERC1967 proxy that's implementation is `this.implementation`."
+				}
+			},
+			"notice": "CoinbaseSmartWallet factory, based on Solady's ERC4337Factory.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/CoinbaseSmartWalletFactory.sol": "CoinbaseSmartWalletFactory"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/Base64.sol": {
+			"keccak256": "0x4b469aac90232dad7f4ca1d5efb1c03a7198137ca2862ee2d88d638418ab886a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://529aca467bc7c9ea4a2b387d41a85339dc0be3a3e2fd0c000ac96147c112ab7f",
+				"dweb:/ipfs/QmSWt3nDKUnPF468qKURBuJNQPPu82Aw3ExbxWkzcw2rys"
+			]
+		},
+		"contracts/CoinbaseSmartWallet.sol": {
+			"keccak256": "0x3229a95850d5288da827018e3b95cd29a6c17f580b23bc1cf24ed58168ed0f79",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://6d8104e731fb104f694355e1b60e9e15f2b1fa3e050b1f1d6e110d2128f8eea4",
+				"dweb:/ipfs/QmcQjJm7JmjrfdsvWxZ9pcYsWVEJARGfx1noiAveuHwnfj"
+			]
+		},
+		"contracts/CoinbaseSmartWalletFactory.sol": {
+			"keccak256": "0xe4619890bc0a8abf9dd6a335dc1faad8c2d48bc1fe8f03ea4d3a5ac0ea2c2e4a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://630301cd6e4f96dc49db7e6744a3de113ced2a506fad171abdb899a425a604b1",
+				"dweb:/ipfs/QmYgCV8exZSkc67xBY9Cg2LUcjArbGykTwtwY8PL8Zp5TS"
+			]
+		},
+		"contracts/ERC1271.sol": {
+			"keccak256": "0xa9e22c15b7bffce561ab4fcb430a796e306acbf1c8be757b9a2f15546e96ddd2",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://25f8b3d4233c419174f99dc021b0c29fc4f85ed2278fec9419dae7d93a2d9481",
+				"dweb:/ipfs/QmTetkPJt5N4Ld9aDMySkjkQQeEBG75HA5LAHdU39ZqnhW"
+			]
+		},
+		"contracts/FCL_ecdsa.sol": {
+			"keccak256": "0xae24708fae61a48b41d53a85b64949034e65cd81438e1742ecf4dd507ee171c6",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a70223b0b65da55a62243f3cfca844c75e4ad3b7803686bb234e96776f9c4c7b",
+				"dweb:/ipfs/QmXSTih9jTud7ssZUnjfPcwjRJAwnj1boZDfms7UpWucHr"
+			]
+		},
+		"contracts/FCL_elliptic.sol": {
+			"keccak256": "0x421a429ea8f2277e9fd6e0b89acb1a3482a31ecfdca609d2b106b85d8075ae8e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://23f5c9a9a51ef33db13cacd985bbc6e09d474c2a43585c38b3468731451b4732",
+				"dweb:/ipfs/Qme1nSC9SZWFKxWfnGJCcqrSRza67MA5zCf5qAvECNkpL8"
+			]
+		},
+		"contracts/Helpers.sol": {
+			"keccak256": "0xe4a7b0563e1a7a37fc4f2412ef4402348aad2c353c476ac40d62346c35f7ab42",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://efea170c47ad6f28715b6037b38d34851e724b3cafebd81f3706fd7822c2d178",
+				"dweb:/ipfs/QmPapAstYXFbKCaqxUtKhwbbXxwdt6JAY5tcYEPaeuEidv"
+			]
+		},
+		"contracts/IAccount.sol": {
+			"keccak256": "0x9add720ef1656bb1ba87363626727fd1d432e41316af8afc5f3c6071e3d7b92a",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://388ca8c1cfe0fa7ae09d470b5402d8695b5c812c0888515da23605684186cf6f",
+				"dweb:/ipfs/QmWFvEPbX38dfc9ZCjqPQmRSFJE7b4NhmodjxtiZofevwm"
+			]
+		},
+		"contracts/LibClone.sol": {
+			"keccak256": "0xc25f54771b24231b784112be405e05354e3126960930180d665f84a2d24e8fae",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://f4499258b0a9b8a34a1ebee75e6754ad319565a5fe2afea260cfbfb8934e389b",
+				"dweb:/ipfs/QmYzFMPwXiwSqYZ5RN3iduX4c5PTG6ze9TyQFtQCDiSNXZ"
+			]
+		},
+		"contracts/LibString.sol": {
+			"keccak256": "0xf27c9f02a895572ec03cc2a73743d2cee07f6b944a6d94239c7158349902ca89",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://9b3d637f89a02b1c9228a2eb8c59283fa6c611d6f4ffa233b46d73ac7d4c62a1",
+				"dweb:/ipfs/QmaVhcWtixrUb7dieCjzvfUKrAHHAvKL92rrvjt673Am8G"
+			]
+		},
+		"contracts/MultiOwnable.sol": {
+			"keccak256": "0x5d7763c89efcbfc8e139daceb1d9908ad181b242c0f20e0cf89271b9a3355a59",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://8f8b62a1ab549680497eaa8af1f91eac05a52404903213eb9d0356d349e3e15f",
+				"dweb:/ipfs/QmTws27kzakWALcGPEqpsRVtqJFKJeUVCUj5TbM2N81Wu6"
+			]
+		},
+		"contracts/Receiver.sol": {
+			"keccak256": "0xd366055b70cd198a68ff007570b0e56e243ab7cd6ef3efaf01d762e6cf56ef0e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d1b023618b90e36ee28b68f9757d9800fb387eeb0cba0568dd8fcb37c54189c3",
+				"dweb:/ipfs/QmaXfYW44NWjnTkAaiWQam7WQ4aaFdtbgySWGdVKUBoPjJ"
+			]
+		},
+		"contracts/SignatureCheckerLib.sol": {
+			"keccak256": "0x27b0ca5a1ce38ff4a36abe0748331efce1304ce76064c10159dbf8988509827d",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://f14e62f4c5c0aac6c467031693ca65ffd97626f4208857e3a1742a082cfae330",
+				"dweb:/ipfs/QmT929ELv3AApoUbpuJBbARsesWKxRDeekpg7UrVuxMx6k"
+			]
+		},
+		"contracts/UUPSUpgradeable.sol": {
+			"keccak256": "0x46d39579c440757e6e20ed164ca4409bd8eb652d506d48a466755c165d27f8c5",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://3c21148774462900d0929d09a2d56420a6850065d91ac001c10887ee796074ac",
+				"dweb:/ipfs/QmNT12cuvaqf1puHQYAJeHFoiYBfmgKKbkLkkW7ETEkjRk"
+			]
+		},
+		"contracts/UserOperation.sol": {
+			"keccak256": "0xb22464b044343da36b79fea8e60a5e708bfc81d59f922f706b6e8a9091dd7df3",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://00985d246ecd65fed1cc768583570bfb84315c9f4bad13275074f3c7ea3a3c9d",
+				"dweb:/ipfs/QmUmSU8LbAcVRMC7JTDfy7bSXNnyA69Qzc6DEaHqi7UKxa"
+			]
+		},
+		"contracts/WebAuthn.sol": {
+			"keccak256": "0x044cc5d8427e214ee27e7db97fdad64984158137e2c54a3de0a1ffb0a740965e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a5ba4ca50e248bdd477577390c83a3be992dbc5630059c814749c0b17876ca13",
+				"dweb:/ipfs/QmXkiQHwbvZsjNrKEHUT3gFPybwEZhxQhSiAj81NAGEq43"
+			]
+		}
+	},
+	"version": 1
+}

@@ -1,0 +1,2134 @@
+{
+	"id": "3e5ea500ac84bc704c0209513cb9fe80",
+	"_format": "hh-sol-build-info-1",
+	"solcVersion": "0.8.23",
+	"solcLongVersion": "0.8.23+commit.f704f362",
+	"input": {
+		"language": "Solidity",
+		"sources": {
+			"contracts/UUPSUpgradeable.sol": {
+				"content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.23;\n\n/// @notice UUPS proxy mixin.\n/// @author Solady (https://github.com/vectorized/solady/blob/main/src/utils/UUPSUpgradeable.sol)\n/// @author Modified from OpenZeppelin\n/// (https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/proxy/utils/UUPSUpgradeable.sol)\n///\n/// Note:\n/// - This implementation is intended to be used with ERC1967 proxies.\n/// See: `LibClone.deployERC1967` and related functions.\n/// - This implementation is NOT compatible with legacy OpenZeppelin proxies\n/// which do not store the implementation at `_ERC1967_IMPLEMENTATION_SLOT`.\nabstract contract UUPSUpgradeable {\n    /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/\n    /*                       CUSTOM ERRORS                        */\n    /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/\n\n    /// @dev The upgrade failed.\n    error UpgradeFailed();\n\n    /// @dev The call is from an unauthorized call context.\n    error UnauthorizedCallContext();\n\n    /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/\n    /*                         IMMUTABLES                         */\n    /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/\n\n    /// @dev For checking if the context is a delegate call.\n    uint256 private immutable __self = uint256(uint160(address(this)));\n\n    /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/\n    /*                           EVENTS                           */\n    /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/\n\n    /// @dev Emitted when the proxy's implementation is upgraded.\n    event Upgraded(address indexed implementation);\n\n    /// @dev `keccak256(bytes(\"Upgraded(address)\"))`.\n    uint256 private constant _UPGRADED_EVENT_SIGNATURE =\n        0xbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b;\n\n    /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/\n    /*                          STORAGE                           */\n    /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/\n\n    /// @dev The ERC-1967 storage slot for the implementation in the proxy.\n    /// `uint256(keccak256(\"eip1967.proxy.implementation\")) - 1`.\n    bytes32 internal constant _ERC1967_IMPLEMENTATION_SLOT =\n        0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;\n\n    /*´:°•.°+.*•´.*:˚.°*.˚•´.°:°•.°•.*•´.*:˚.°*.˚•´.°:°•.°+.*•´.*:*/\n    /*                      UUPS OPERATIONS                       */\n    /*.•°:°.´+˚.*°.˚:*.´•*.+°.•°:´*.´•*.•°.•°:°.´:•˚°.*°.˚:*.´+°.•*/\n\n    /// @dev Please override this function to check if `msg.sender` is authorized\n    /// to upgrade the proxy to `newImplementation`, reverting if not.\n    /// ```\n    ///     function _authorizeUpgrade(address) internal override onlyOwner {}\n    /// ```\n    function _authorizeUpgrade(address newImplementation) internal virtual;\n\n    /// @dev Returns the storage slot used by the implementation,\n    /// as specified in [ERC1822](https://eips.ethereum.org/EIPS/eip-1822).\n    ///\n    /// Note: The `notDelegated` modifier prevents accidental upgrades to\n    /// an implementation that is a proxy contract.\n    function proxiableUUID() public view virtual notDelegated returns (bytes32) {\n        // This function must always return `_ERC1967_IMPLEMENTATION_SLOT` to comply with ERC1967.\n        return _ERC1967_IMPLEMENTATION_SLOT;\n    }\n\n    /// @dev Upgrades the proxy's implementation to `newImplementation`.\n    /// Emits a {Upgraded} event.\n    ///\n    /// Note: Passing in empty `data` skips the delegatecall to `newImplementation`.\n    function upgradeToAndCall(address newImplementation, bytes calldata data)\n        public\n        payable\n        virtual\n        onlyProxy\n    {\n        _authorizeUpgrade(newImplementation);\n        /// @solidity memory-safe-assembly\n        assembly {\n            newImplementation := shr(96, shl(96, newImplementation)) // Clears upper 96 bits.\n            mstore(0x01, 0x52d1902d) // `proxiableUUID()`.\n            let s := _ERC1967_IMPLEMENTATION_SLOT\n            // Check if `newImplementation` implements `proxiableUUID` correctly.\n            if iszero(eq(mload(staticcall(gas(), newImplementation, 0x1d, 0x04, 0x01, 0x20)), s)) {\n                mstore(0x01, 0x55299b49) // `UpgradeFailed()`.\n                revert(0x1d, 0x04)\n            }\n            // Emit the {Upgraded} event.\n            log2(codesize(), 0x00, _UPGRADED_EVENT_SIGNATURE, newImplementation)\n            sstore(s, newImplementation) // Updates the implementation.\n\n            // Perform a delegatecall to `newImplementation` if `data` is non-empty.\n            if data.length {\n                // Forwards the `data` to `newImplementation` via delegatecall.\n                let m := mload(0x40)\n                calldatacopy(m, data.offset, data.length)\n                if iszero(delegatecall(gas(), newImplementation, m, data.length, codesize(), 0x00))\n                {\n                    // Bubble up the revert if the call reverts.\n                    returndatacopy(m, 0x00, returndatasize())\n                    revert(m, returndatasize())\n                }\n            }\n        }\n    }\n\n    /// @dev Requires that the execution is performed through a proxy.\n    modifier onlyProxy() {\n        uint256 s = __self;\n        /// @solidity memory-safe-assembly\n        assembly {\n            // To enable use cases with an immutable default implementation in the bytecode,\n            // (see: ERC6551Proxy), we don't require that the proxy address must match the\n            // value stored in the implementation slot, which may not be initialized.\n            if eq(s, address()) {\n                mstore(0x00, 0x9f03a026) // `UnauthorizedCallContext()`.\n                revert(0x1c, 0x04)\n            }\n        }\n        _;\n    }\n\n    /// @dev Requires that the execution is NOT performed via delegatecall.\n    /// This is the opposite of `onlyProxy`.\n    modifier notDelegated() {\n        uint256 s = __self;\n        /// @solidity memory-safe-assembly\n        assembly {\n            if iszero(eq(s, address())) {\n                mstore(0x00, 0x9f03a026) // `UnauthorizedCallContext()`.\n                revert(0x1c, 0x04)\n            }\n        }\n        _;\n    }\n}"
+			}
+		},
+		"settings": {
+			"optimizer": {
+				"enabled": false,
+				"runs": 200
+			},
+			"outputSelection": {
+				"*": {
+					"": [
+						"ast"
+					],
+					"*": [
+						"abi",
+						"metadata",
+						"devdoc",
+						"userdoc",
+						"storageLayout",
+						"evm.legacyAssembly",
+						"evm.bytecode",
+						"evm.deployedBytecode",
+						"evm.methodIdentifiers",
+						"evm.gasEstimates",
+						"evm.assembly"
+					]
+				}
+			},
+			"remappings": []
+		}
+	},
+	"output": {
+		"contracts": {
+			"contracts/UUPSUpgradeable.sol": {
+				"UUPSUpgradeable": {
+					"abi": [
+						{
+							"inputs": [],
+							"name": "UnauthorizedCallContext",
+							"type": "error"
+						},
+						{
+							"inputs": [],
+							"name": "UpgradeFailed",
+							"type": "error"
+						},
+						{
+							"anonymous": false,
+							"inputs": [
+								{
+									"indexed": true,
+									"internalType": "address",
+									"name": "implementation",
+									"type": "address"
+								}
+							],
+							"name": "Upgraded",
+							"type": "event"
+						},
+						{
+							"inputs": [],
+							"name": "proxiableUUID",
+							"outputs": [
+								{
+									"internalType": "bytes32",
+									"name": "",
+									"type": "bytes32"
+								}
+							],
+							"stateMutability": "view",
+							"type": "function"
+						},
+						{
+							"inputs": [
+								{
+									"internalType": "address",
+									"name": "newImplementation",
+									"type": "address"
+								},
+								{
+									"internalType": "bytes",
+									"name": "data",
+									"type": "bytes"
+								}
+							],
+							"name": "upgradeToAndCall",
+							"outputs": [],
+							"stateMutability": "payable",
+							"type": "function"
+						}
+					],
+					"devdoc": {
+						"author": "Solady (https://github.com/vectorized/solady/blob/main/src/utils/UUPSUpgradeable.sol)Modified from OpenZeppelin (https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/proxy/utils/UUPSUpgradeable.sol) Note: - This implementation is intended to be used with ERC1967 proxies. See: `LibClone.deployERC1967` and related functions. - This implementation is NOT compatible with legacy OpenZeppelin proxies which do not store the implementation at `_ERC1967_IMPLEMENTATION_SLOT`.",
+						"errors": {
+							"UnauthorizedCallContext()": [
+								{
+									"details": "The call is from an unauthorized call context."
+								}
+							],
+							"UpgradeFailed()": [
+								{
+									"details": "The upgrade failed."
+								}
+							]
+						},
+						"events": {
+							"Upgraded(address)": {
+								"details": "Emitted when the proxy's implementation is upgraded."
+							}
+						},
+						"kind": "dev",
+						"methods": {
+							"proxiableUUID()": {
+								"details": "Returns the storage slot used by the implementation, as specified in [ERC1822](https://eips.ethereum.org/EIPS/eip-1822). Note: The `notDelegated` modifier prevents accidental upgrades to an implementation that is a proxy contract."
+							},
+							"upgradeToAndCall(address,bytes)": {
+								"details": "Upgrades the proxy's implementation to `newImplementation`. Emits a {Upgraded} event. Note: Passing in empty `data` skips the delegatecall to `newImplementation`."
+							}
+						},
+						"stateVariables": {
+							"_ERC1967_IMPLEMENTATION_SLOT": {
+								"details": "The ERC-1967 storage slot for the implementation in the proxy. `uint256(keccak256(\"eip1967.proxy.implementation\")) - 1`."
+							},
+							"_UPGRADED_EVENT_SIGNATURE": {
+								"details": "`keccak256(bytes(\"Upgraded(address)\"))`."
+							},
+							"__self": {
+								"details": "For checking if the context is a delegate call."
+							}
+						},
+						"version": 1
+					},
+					"evm": {
+						"assembly": "",
+						"bytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"deployedBytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"immutableReferences": {},
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"gasEstimates": null,
+						"legacyAssembly": null,
+						"methodIdentifiers": {
+							"proxiableUUID()": "52d1902d",
+							"upgradeToAndCall(address,bytes)": "4f1ef286"
+						}
+					},
+					"metadata": "{\"compiler\":{\"version\":\"0.8.23+commit.f704f362\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"UnauthorizedCallContext\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"UpgradeFailed\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"implementation\",\"type\":\"address\"}],\"name\":\"Upgraded\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"proxiableUUID\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newImplementation\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"upgradeToAndCall\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"Solady (https://github.com/vectorized/solady/blob/main/src/utils/UUPSUpgradeable.sol)Modified from OpenZeppelin (https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/proxy/utils/UUPSUpgradeable.sol) Note: - This implementation is intended to be used with ERC1967 proxies. See: `LibClone.deployERC1967` and related functions. - This implementation is NOT compatible with legacy OpenZeppelin proxies which do not store the implementation at `_ERC1967_IMPLEMENTATION_SLOT`.\",\"errors\":{\"UnauthorizedCallContext()\":[{\"details\":\"The call is from an unauthorized call context.\"}],\"UpgradeFailed()\":[{\"details\":\"The upgrade failed.\"}]},\"events\":{\"Upgraded(address)\":{\"details\":\"Emitted when the proxy's implementation is upgraded.\"}},\"kind\":\"dev\",\"methods\":{\"proxiableUUID()\":{\"details\":\"Returns the storage slot used by the implementation, as specified in [ERC1822](https://eips.ethereum.org/EIPS/eip-1822). Note: The `notDelegated` modifier prevents accidental upgrades to an implementation that is a proxy contract.\"},\"upgradeToAndCall(address,bytes)\":{\"details\":\"Upgrades the proxy's implementation to `newImplementation`. Emits a {Upgraded} event. Note: Passing in empty `data` skips the delegatecall to `newImplementation`.\"}},\"stateVariables\":{\"_ERC1967_IMPLEMENTATION_SLOT\":{\"details\":\"The ERC-1967 storage slot for the implementation in the proxy. `uint256(keccak256(\\\"eip1967.proxy.implementation\\\")) - 1`.\"},\"_UPGRADED_EVENT_SIGNATURE\":{\"details\":\"`keccak256(bytes(\\\"Upgraded(address)\\\"))`.\"},\"__self\":{\"details\":\"For checking if the context is a delegate call.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"UUPS proxy mixin.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/UUPSUpgradeable.sol\":\"UUPSUpgradeable\"},\"evmVersion\":\"shanghai\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/UUPSUpgradeable.sol\":{\"keccak256\":\"0x80b163325261e790fe2e07b078709bb1cf7fbc9bdea2bb9c94a18414a342a582\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2b014c135b85275e9f47d62dce4689205cbdd4a742c439a8a52ffd26ece6125f\",\"dweb:/ipfs/QmRDyWkadMBdr1TZAF7qvfHCcpT9WEctC3nxREAY3DRUiz\"]}},\"version\":1}",
+					"storageLayout": {
+						"storage": [],
+						"types": null
+					},
+					"userdoc": {
+						"kind": "user",
+						"methods": {},
+						"notice": "UUPS proxy mixin.",
+						"version": 1
+					}
+				}
+			}
+		},
+		"sources": {
+			"contracts/UUPSUpgradeable.sol": {
+				"ast": {
+					"absolutePath": "contracts/UUPSUpgradeable.sol",
+					"exportedSymbols": {
+						"UUPSUpgradeable": [
+							88
+						]
+					},
+					"id": 89,
+					"license": "MIT",
+					"nodeType": "SourceUnit",
+					"nodes": [
+						{
+							"id": 1,
+							"literals": [
+								"solidity",
+								"^",
+								"0.8",
+								".23"
+							],
+							"nodeType": "PragmaDirective",
+							"src": "32:24:0"
+						},
+						{
+							"abstract": true,
+							"baseContracts": [],
+							"canonicalName": "UUPSUpgradeable",
+							"contractDependencies": [],
+							"contractKind": "contract",
+							"documentation": {
+								"id": 2,
+								"nodeType": "StructuredDocumentation",
+								"src": "58:578:0",
+								"text": "@notice UUPS proxy mixin.\n @author Solady (https://github.com/vectorized/solady/blob/main/src/utils/UUPSUpgradeable.sol)\n @author Modified from OpenZeppelin\n (https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/proxy/utils/UUPSUpgradeable.sol)\n Note:\n - This implementation is intended to be used with ERC1967 proxies.\n See: `LibClone.deployERC1967` and related functions.\n - This implementation is NOT compatible with legacy OpenZeppelin proxies\n which do not store the implementation at `_ERC1967_IMPLEMENTATION_SLOT`."
+							},
+							"fullyImplemented": false,
+							"id": 88,
+							"linearizedBaseContracts": [
+								88
+							],
+							"name": "UUPSUpgradeable",
+							"nameLocation": "654:15:0",
+							"nodeType": "ContractDefinition",
+							"nodes": [
+								{
+									"documentation": {
+										"id": 3,
+										"nodeType": "StructuredDocumentation",
+										"src": "959:28:0",
+										"text": "@dev The upgrade failed."
+									},
+									"errorSelector": "55299b49",
+									"id": 5,
+									"name": "UpgradeFailed",
+									"nameLocation": "998:13:0",
+									"nodeType": "ErrorDefinition",
+									"parameters": {
+										"id": 4,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "1011:2:0"
+									},
+									"src": "992:22:0"
+								},
+								{
+									"documentation": {
+										"id": 6,
+										"nodeType": "StructuredDocumentation",
+										"src": "1020:55:0",
+										"text": "@dev The call is from an unauthorized call context."
+									},
+									"errorSelector": "9f03a026",
+									"id": 8,
+									"name": "UnauthorizedCallContext",
+									"nameLocation": "1086:23:0",
+									"nodeType": "ErrorDefinition",
+									"parameters": {
+										"id": 7,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "1109:2:0"
+									},
+									"src": "1080:32:0"
+								},
+								{
+									"constant": false,
+									"documentation": {
+										"id": 9,
+										"nodeType": "StructuredDocumentation",
+										"src": "1401:56:0",
+										"text": "@dev For checking if the context is a delegate call."
+									},
+									"id": 21,
+									"mutability": "immutable",
+									"name": "__self",
+									"nameLocation": "1488:6:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 88,
+									"src": "1462:66:0",
+									"stateVariable": true,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint256",
+										"typeString": "uint256"
+									},
+									"typeName": {
+										"id": 10,
+										"name": "uint256",
+										"nodeType": "ElementaryTypeName",
+										"src": "1462:7:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint256",
+											"typeString": "uint256"
+										}
+									},
+									"value": {
+										"arguments": [
+											{
+												"arguments": [
+													{
+														"arguments": [
+															{
+																"id": 17,
+																"name": "this",
+																"nodeType": "Identifier",
+																"overloadedDeclarations": [],
+																"referencedDeclaration": 4294967268,
+																"src": "1521:4:0",
+																"typeDescriptions": {
+																	"typeIdentifier": "t_contract$_UUPSUpgradeable_$88",
+																	"typeString": "contract UUPSUpgradeable"
+																}
+															}
+														],
+														"expression": {
+															"argumentTypes": [
+																{
+																	"typeIdentifier": "t_contract$_UUPSUpgradeable_$88",
+																	"typeString": "contract UUPSUpgradeable"
+																}
+															],
+															"id": 16,
+															"isConstant": false,
+															"isLValue": false,
+															"isPure": true,
+															"lValueRequested": false,
+															"nodeType": "ElementaryTypeNameExpression",
+															"src": "1513:7:0",
+															"typeDescriptions": {
+																"typeIdentifier": "t_type$_t_address_$",
+																"typeString": "type(address)"
+															},
+															"typeName": {
+																"id": 15,
+																"name": "address",
+																"nodeType": "ElementaryTypeName",
+																"src": "1513:7:0",
+																"typeDescriptions": {}
+															}
+														},
+														"id": 18,
+														"isConstant": false,
+														"isLValue": false,
+														"isPure": false,
+														"kind": "typeConversion",
+														"lValueRequested": false,
+														"nameLocations": [],
+														"names": [],
+														"nodeType": "FunctionCall",
+														"src": "1513:13:0",
+														"tryCall": false,
+														"typeDescriptions": {
+															"typeIdentifier": "t_address",
+															"typeString": "address"
+														}
+													}
+												],
+												"expression": {
+													"argumentTypes": [
+														{
+															"typeIdentifier": "t_address",
+															"typeString": "address"
+														}
+													],
+													"id": 14,
+													"isConstant": false,
+													"isLValue": false,
+													"isPure": true,
+													"lValueRequested": false,
+													"nodeType": "ElementaryTypeNameExpression",
+													"src": "1505:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_type$_t_uint160_$",
+														"typeString": "type(uint160)"
+													},
+													"typeName": {
+														"id": 13,
+														"name": "uint160",
+														"nodeType": "ElementaryTypeName",
+														"src": "1505:7:0",
+														"typeDescriptions": {}
+													}
+												},
+												"id": 19,
+												"isConstant": false,
+												"isLValue": false,
+												"isPure": false,
+												"kind": "typeConversion",
+												"lValueRequested": false,
+												"nameLocations": [],
+												"names": [],
+												"nodeType": "FunctionCall",
+												"src": "1505:22:0",
+												"tryCall": false,
+												"typeDescriptions": {
+													"typeIdentifier": "t_uint160",
+													"typeString": "uint160"
+												}
+											}
+										],
+										"expression": {
+											"argumentTypes": [
+												{
+													"typeIdentifier": "t_uint160",
+													"typeString": "uint160"
+												}
+											],
+											"id": 12,
+											"isConstant": false,
+											"isLValue": false,
+											"isPure": true,
+											"lValueRequested": false,
+											"nodeType": "ElementaryTypeNameExpression",
+											"src": "1497:7:0",
+											"typeDescriptions": {
+												"typeIdentifier": "t_type$_t_uint256_$",
+												"typeString": "type(uint256)"
+											},
+											"typeName": {
+												"id": 11,
+												"name": "uint256",
+												"nodeType": "ElementaryTypeName",
+												"src": "1497:7:0",
+												"typeDescriptions": {}
+											}
+										},
+										"id": 20,
+										"isConstant": false,
+										"isLValue": false,
+										"isPure": false,
+										"kind": "typeConversion",
+										"lValueRequested": false,
+										"nameLocations": [],
+										"names": [],
+										"nodeType": "FunctionCall",
+										"src": "1497:31:0",
+										"tryCall": false,
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint256",
+											"typeString": "uint256"
+										}
+									},
+									"visibility": "private"
+								},
+								{
+									"anonymous": false,
+									"documentation": {
+										"id": 22,
+										"nodeType": "StructuredDocumentation",
+										"src": "1818:61:0",
+										"text": "@dev Emitted when the proxy's implementation is upgraded."
+									},
+									"eventSelector": "bc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b",
+									"id": 26,
+									"name": "Upgraded",
+									"nameLocation": "1890:8:0",
+									"nodeType": "EventDefinition",
+									"parameters": {
+										"id": 25,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 24,
+												"indexed": true,
+												"mutability": "mutable",
+												"name": "implementation",
+												"nameLocation": "1915:14:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 26,
+												"src": "1899:30:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 23,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "1899:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "1898:32:0"
+									},
+									"src": "1884:47:0"
+								},
+								{
+									"constant": true,
+									"documentation": {
+										"id": 27,
+										"nodeType": "StructuredDocumentation",
+										"src": "1937:49:0",
+										"text": "@dev `keccak256(bytes(\"Upgraded(address)\"))`."
+									},
+									"id": 30,
+									"mutability": "constant",
+									"name": "_UPGRADED_EVENT_SIGNATURE",
+									"nameLocation": "2016:25:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 88,
+									"src": "1991:127:0",
+									"stateVariable": true,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_uint256",
+										"typeString": "uint256"
+									},
+									"typeName": {
+										"id": 28,
+										"name": "uint256",
+										"nodeType": "ElementaryTypeName",
+										"src": "1991:7:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_uint256",
+											"typeString": "uint256"
+										}
+									},
+									"value": {
+										"hexValue": "307862633763643735613230656532376664396164656261623332303431663735353231346462633662666661393063633032323562333964613265356332643362",
+										"id": 29,
+										"isConstant": false,
+										"isLValue": false,
+										"isPure": true,
+										"kind": "number",
+										"lValueRequested": false,
+										"nodeType": "Literal",
+										"src": "2052:66:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_rational_85255390875014325802867460126659607941379558699672153012307716606304121007419_by_1",
+											"typeString": "int_const 8525...(69 digits omitted)...7419"
+										},
+										"value": "0xbc7cd75a20ee27fd9adebab32041f755214dbc6bffa90cc0225b39da2e5c2d3b"
+									},
+									"visibility": "private"
+								},
+								{
+									"constant": true,
+									"documentation": {
+										"id": 31,
+										"nodeType": "StructuredDocumentation",
+										"src": "2408:137:0",
+										"text": "@dev The ERC-1967 storage slot for the implementation in the proxy.\n `uint256(keccak256(\"eip1967.proxy.implementation\")) - 1`."
+									},
+									"id": 34,
+									"mutability": "constant",
+									"name": "_ERC1967_IMPLEMENTATION_SLOT",
+									"nameLocation": "2576:28:0",
+									"nodeType": "VariableDeclaration",
+									"scope": 88,
+									"src": "2550:131:0",
+									"stateVariable": true,
+									"storageLocation": "default",
+									"typeDescriptions": {
+										"typeIdentifier": "t_bytes32",
+										"typeString": "bytes32"
+									},
+									"typeName": {
+										"id": 32,
+										"name": "bytes32",
+										"nodeType": "ElementaryTypeName",
+										"src": "2550:7:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_bytes32",
+											"typeString": "bytes32"
+										}
+									},
+									"value": {
+										"hexValue": "307833363038393461313362613161333231303636376338323834393264623938646361336532303736636333373335613932306133636135303564333832626263",
+										"id": 33,
+										"isConstant": false,
+										"isLValue": false,
+										"isPure": true,
+										"kind": "number",
+										"lValueRequested": false,
+										"nodeType": "Literal",
+										"src": "2615:66:0",
+										"typeDescriptions": {
+											"typeIdentifier": "t_rational_24440054405305269366569402256811496959409073762505157381672968839269610695612_by_1",
+											"typeString": "int_const 2444...(69 digits omitted)...5612"
+										},
+										"value": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+									},
+									"visibility": "internal"
+								},
+								{
+									"documentation": {
+										"id": 35,
+										"nodeType": "StructuredDocumentation",
+										"src": "2971:251:0",
+										"text": "@dev Please override this function to check if `msg.sender` is authorized\n to upgrade the proxy to `newImplementation`, reverting if not.\n ```\n     function _authorizeUpgrade(address) internal override onlyOwner {}\n ```"
+									},
+									"id": 40,
+									"implemented": false,
+									"kind": "function",
+									"modifiers": [],
+									"name": "_authorizeUpgrade",
+									"nameLocation": "3236:17:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 38,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 37,
+												"mutability": "mutable",
+												"name": "newImplementation",
+												"nameLocation": "3262:17:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 40,
+												"src": "3254:25:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 36,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "3254:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "3253:27:0"
+									},
+									"returnParameters": {
+										"id": 39,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "3297:0:0"
+									},
+									"scope": 88,
+									"src": "3227:71:0",
+									"stateMutability": "nonpayable",
+									"virtual": true,
+									"visibility": "internal"
+								},
+								{
+									"body": {
+										"id": 50,
+										"nodeType": "Block",
+										"src": "3656:151:0",
+										"statements": [
+											{
+												"expression": {
+													"id": 48,
+													"name": "_ERC1967_IMPLEMENTATION_SLOT",
+													"nodeType": "Identifier",
+													"overloadedDeclarations": [],
+													"referencedDeclaration": 34,
+													"src": "3772:28:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes32",
+														"typeString": "bytes32"
+													}
+												},
+												"functionReturnParameters": 47,
+												"id": 49,
+												"nodeType": "Return",
+												"src": "3765:35:0"
+											}
+										]
+									},
+									"documentation": {
+										"id": 41,
+										"nodeType": "StructuredDocumentation",
+										"src": "3304:271:0",
+										"text": "@dev Returns the storage slot used by the implementation,\n as specified in [ERC1822](https://eips.ethereum.org/EIPS/eip-1822).\n Note: The `notDelegated` modifier prevents accidental upgrades to\n an implementation that is a proxy contract."
+									},
+									"functionSelector": "52d1902d",
+									"id": 51,
+									"implemented": true,
+									"kind": "function",
+									"modifiers": [
+										{
+											"id": 44,
+											"kind": "modifierInvocation",
+											"modifierName": {
+												"id": 43,
+												"name": "notDelegated",
+												"nameLocations": [
+													"3625:12:0"
+												],
+												"nodeType": "IdentifierPath",
+												"referencedDeclaration": 87,
+												"src": "3625:12:0"
+											},
+											"nodeType": "ModifierInvocation",
+											"src": "3625:12:0"
+										}
+									],
+									"name": "proxiableUUID",
+									"nameLocation": "3589:13:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 42,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "3602:2:0"
+									},
+									"returnParameters": {
+										"id": 47,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 46,
+												"mutability": "mutable",
+												"name": "",
+												"nameLocation": "-1:-1:-1",
+												"nodeType": "VariableDeclaration",
+												"scope": 51,
+												"src": "3647:7:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes32",
+													"typeString": "bytes32"
+												},
+												"typeName": {
+													"id": 45,
+													"name": "bytes32",
+													"nodeType": "ElementaryTypeName",
+													"src": "3647:7:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes32",
+														"typeString": "bytes32"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "3646:9:0"
+									},
+									"scope": 88,
+									"src": "3580:227:0",
+									"stateMutability": "view",
+									"virtual": true,
+									"visibility": "public"
+								},
+								{
+									"body": {
+										"id": 66,
+										"nodeType": "Block",
+										"src": "4156:1432:0",
+										"statements": [
+											{
+												"expression": {
+													"arguments": [
+														{
+															"id": 62,
+															"name": "newImplementation",
+															"nodeType": "Identifier",
+															"overloadedDeclarations": [],
+															"referencedDeclaration": 54,
+															"src": "4184:17:0",
+															"typeDescriptions": {
+																"typeIdentifier": "t_address",
+																"typeString": "address"
+															}
+														}
+													],
+													"expression": {
+														"argumentTypes": [
+															{
+																"typeIdentifier": "t_address",
+																"typeString": "address"
+															}
+														],
+														"id": 61,
+														"name": "_authorizeUpgrade",
+														"nodeType": "Identifier",
+														"overloadedDeclarations": [],
+														"referencedDeclaration": 40,
+														"src": "4166:17:0",
+														"typeDescriptions": {
+															"typeIdentifier": "t_function_internal_nonpayable$_t_address_$returns$__$",
+															"typeString": "function (address)"
+														}
+													},
+													"id": 63,
+													"isConstant": false,
+													"isLValue": false,
+													"isPure": false,
+													"kind": "functionCall",
+													"lValueRequested": false,
+													"nameLocations": [],
+													"names": [],
+													"nodeType": "FunctionCall",
+													"src": "4166:36:0",
+													"tryCall": false,
+													"typeDescriptions": {
+														"typeIdentifier": "t_tuple$__$",
+														"typeString": "tuple()"
+													}
+												},
+												"id": 64,
+												"nodeType": "ExpressionStatement",
+												"src": "4166:36:0"
+											},
+											{
+												"AST": {
+													"nativeSrc": "4264:1318:0",
+													"nodeType": "YulBlock",
+													"src": "4264:1318:0",
+													"statements": [
+														{
+															"nativeSrc": "4278:56:0",
+															"nodeType": "YulAssignment",
+															"src": "4278:56:0",
+															"value": {
+																"arguments": [
+																	{
+																		"kind": "number",
+																		"nativeSrc": "4303:2:0",
+																		"nodeType": "YulLiteral",
+																		"src": "4303:2:0",
+																		"type": "",
+																		"value": "96"
+																	},
+																	{
+																		"arguments": [
+																			{
+																				"kind": "number",
+																				"nativeSrc": "4311:2:0",
+																				"nodeType": "YulLiteral",
+																				"src": "4311:2:0",
+																				"type": "",
+																				"value": "96"
+																			},
+																			{
+																				"name": "newImplementation",
+																				"nativeSrc": "4315:17:0",
+																				"nodeType": "YulIdentifier",
+																				"src": "4315:17:0"
+																			}
+																		],
+																		"functionName": {
+																			"name": "shl",
+																			"nativeSrc": "4307:3:0",
+																			"nodeType": "YulIdentifier",
+																			"src": "4307:3:0"
+																		},
+																		"nativeSrc": "4307:26:0",
+																		"nodeType": "YulFunctionCall",
+																		"src": "4307:26:0"
+																	}
+																],
+																"functionName": {
+																	"name": "shr",
+																	"nativeSrc": "4299:3:0",
+																	"nodeType": "YulIdentifier",
+																	"src": "4299:3:0"
+																},
+																"nativeSrc": "4299:35:0",
+																"nodeType": "YulFunctionCall",
+																"src": "4299:35:0"
+															},
+															"variableNames": [
+																{
+																	"name": "newImplementation",
+																	"nativeSrc": "4278:17:0",
+																	"nodeType": "YulIdentifier",
+																	"src": "4278:17:0"
+																}
+															]
+														},
+														{
+															"expression": {
+																"arguments": [
+																	{
+																		"kind": "number",
+																		"nativeSrc": "4379:4:0",
+																		"nodeType": "YulLiteral",
+																		"src": "4379:4:0",
+																		"type": "",
+																		"value": "0x01"
+																	},
+																	{
+																		"kind": "number",
+																		"nativeSrc": "4385:10:0",
+																		"nodeType": "YulLiteral",
+																		"src": "4385:10:0",
+																		"type": "",
+																		"value": "0x52d1902d"
+																	}
+																],
+																"functionName": {
+																	"name": "mstore",
+																	"nativeSrc": "4372:6:0",
+																	"nodeType": "YulIdentifier",
+																	"src": "4372:6:0"
+																},
+																"nativeSrc": "4372:24:0",
+																"nodeType": "YulFunctionCall",
+																"src": "4372:24:0"
+															},
+															"nativeSrc": "4372:24:0",
+															"nodeType": "YulExpressionStatement",
+															"src": "4372:24:0"
+														},
+														{
+															"nativeSrc": "4431:37:0",
+															"nodeType": "YulVariableDeclaration",
+															"src": "4431:37:0",
+															"value": {
+																"name": "_ERC1967_IMPLEMENTATION_SLOT",
+																"nativeSrc": "4440:28:0",
+																"nodeType": "YulIdentifier",
+																"src": "4440:28:0"
+															},
+															"variables": [
+																{
+																	"name": "s",
+																	"nativeSrc": "4435:1:0",
+																	"nodeType": "YulTypedName",
+																	"src": "4435:1:0",
+																	"type": ""
+																}
+															]
+														},
+														{
+															"body": {
+																"nativeSrc": "4649:113:0",
+																"nodeType": "YulBlock",
+																"src": "4649:113:0",
+																"statements": [
+																	{
+																		"expression": {
+																			"arguments": [
+																				{
+																					"kind": "number",
+																					"nativeSrc": "4674:4:0",
+																					"nodeType": "YulLiteral",
+																					"src": "4674:4:0",
+																					"type": "",
+																					"value": "0x01"
+																				},
+																				{
+																					"kind": "number",
+																					"nativeSrc": "4680:10:0",
+																					"nodeType": "YulLiteral",
+																					"src": "4680:10:0",
+																					"type": "",
+																					"value": "0x55299b49"
+																				}
+																			],
+																			"functionName": {
+																				"name": "mstore",
+																				"nativeSrc": "4667:6:0",
+																				"nodeType": "YulIdentifier",
+																				"src": "4667:6:0"
+																			},
+																			"nativeSrc": "4667:24:0",
+																			"nodeType": "YulFunctionCall",
+																			"src": "4667:24:0"
+																		},
+																		"nativeSrc": "4667:24:0",
+																		"nodeType": "YulExpressionStatement",
+																		"src": "4667:24:0"
+																	},
+																	{
+																		"expression": {
+																			"arguments": [
+																				{
+																					"kind": "number",
+																					"nativeSrc": "4737:4:0",
+																					"nodeType": "YulLiteral",
+																					"src": "4737:4:0",
+																					"type": "",
+																					"value": "0x1d"
+																				},
+																				{
+																					"kind": "number",
+																					"nativeSrc": "4743:4:0",
+																					"nodeType": "YulLiteral",
+																					"src": "4743:4:0",
+																					"type": "",
+																					"value": "0x04"
+																				}
+																			],
+																			"functionName": {
+																				"name": "revert",
+																				"nativeSrc": "4730:6:0",
+																				"nodeType": "YulIdentifier",
+																				"src": "4730:6:0"
+																			},
+																			"nativeSrc": "4730:18:0",
+																			"nodeType": "YulFunctionCall",
+																			"src": "4730:18:0"
+																		},
+																		"nativeSrc": "4730:18:0",
+																		"nodeType": "YulExpressionStatement",
+																		"src": "4730:18:0"
+																	}
+																]
+															},
+															"condition": {
+																"arguments": [
+																	{
+																		"arguments": [
+																			{
+																				"arguments": [
+																					{
+																						"arguments": [
+																							{
+																								"arguments": [],
+																								"functionName": {
+																									"name": "gas",
+																									"nativeSrc": "4593:3:0",
+																									"nodeType": "YulIdentifier",
+																									"src": "4593:3:0"
+																								},
+																								"nativeSrc": "4593:5:0",
+																								"nodeType": "YulFunctionCall",
+																								"src": "4593:5:0"
+																							},
+																							{
+																								"name": "newImplementation",
+																								"nativeSrc": "4600:17:0",
+																								"nodeType": "YulIdentifier",
+																								"src": "4600:17:0"
+																							},
+																							{
+																								"kind": "number",
+																								"nativeSrc": "4619:4:0",
+																								"nodeType": "YulLiteral",
+																								"src": "4619:4:0",
+																								"type": "",
+																								"value": "0x1d"
+																							},
+																							{
+																								"kind": "number",
+																								"nativeSrc": "4625:4:0",
+																								"nodeType": "YulLiteral",
+																								"src": "4625:4:0",
+																								"type": "",
+																								"value": "0x04"
+																							},
+																							{
+																								"kind": "number",
+																								"nativeSrc": "4631:4:0",
+																								"nodeType": "YulLiteral",
+																								"src": "4631:4:0",
+																								"type": "",
+																								"value": "0x01"
+																							},
+																							{
+																								"kind": "number",
+																								"nativeSrc": "4637:4:0",
+																								"nodeType": "YulLiteral",
+																								"src": "4637:4:0",
+																								"type": "",
+																								"value": "0x20"
+																							}
+																						],
+																						"functionName": {
+																							"name": "staticcall",
+																							"nativeSrc": "4582:10:0",
+																							"nodeType": "YulIdentifier",
+																							"src": "4582:10:0"
+																						},
+																						"nativeSrc": "4582:60:0",
+																						"nodeType": "YulFunctionCall",
+																						"src": "4582:60:0"
+																					}
+																				],
+																				"functionName": {
+																					"name": "mload",
+																					"nativeSrc": "4576:5:0",
+																					"nodeType": "YulIdentifier",
+																					"src": "4576:5:0"
+																				},
+																				"nativeSrc": "4576:67:0",
+																				"nodeType": "YulFunctionCall",
+																				"src": "4576:67:0"
+																			},
+																			{
+																				"name": "s",
+																				"nativeSrc": "4645:1:0",
+																				"nodeType": "YulIdentifier",
+																				"src": "4645:1:0"
+																			}
+																		],
+																		"functionName": {
+																			"name": "eq",
+																			"nativeSrc": "4573:2:0",
+																			"nodeType": "YulIdentifier",
+																			"src": "4573:2:0"
+																		},
+																		"nativeSrc": "4573:74:0",
+																		"nodeType": "YulFunctionCall",
+																		"src": "4573:74:0"
+																	}
+																],
+																"functionName": {
+																	"name": "iszero",
+																	"nativeSrc": "4566:6:0",
+																	"nodeType": "YulIdentifier",
+																	"src": "4566:6:0"
+																},
+																"nativeSrc": "4566:82:0",
+																"nodeType": "YulFunctionCall",
+																"src": "4566:82:0"
+															},
+															"nativeSrc": "4563:199:0",
+															"nodeType": "YulIf",
+															"src": "4563:199:0"
+														},
+														{
+															"expression": {
+																"arguments": [
+																	{
+																		"arguments": [],
+																		"functionName": {
+																			"name": "codesize",
+																			"nativeSrc": "4822:8:0",
+																			"nodeType": "YulIdentifier",
+																			"src": "4822:8:0"
+																		},
+																		"nativeSrc": "4822:10:0",
+																		"nodeType": "YulFunctionCall",
+																		"src": "4822:10:0"
+																	},
+																	{
+																		"kind": "number",
+																		"nativeSrc": "4834:4:0",
+																		"nodeType": "YulLiteral",
+																		"src": "4834:4:0",
+																		"type": "",
+																		"value": "0x00"
+																	},
+																	{
+																		"name": "_UPGRADED_EVENT_SIGNATURE",
+																		"nativeSrc": "4840:25:0",
+																		"nodeType": "YulIdentifier",
+																		"src": "4840:25:0"
+																	},
+																	{
+																		"name": "newImplementation",
+																		"nativeSrc": "4867:17:0",
+																		"nodeType": "YulIdentifier",
+																		"src": "4867:17:0"
+																	}
+																],
+																"functionName": {
+																	"name": "log2",
+																	"nativeSrc": "4817:4:0",
+																	"nodeType": "YulIdentifier",
+																	"src": "4817:4:0"
+																},
+																"nativeSrc": "4817:68:0",
+																"nodeType": "YulFunctionCall",
+																"src": "4817:68:0"
+															},
+															"nativeSrc": "4817:68:0",
+															"nodeType": "YulExpressionStatement",
+															"src": "4817:68:0"
+														},
+														{
+															"expression": {
+																"arguments": [
+																	{
+																		"name": "s",
+																		"nativeSrc": "4905:1:0",
+																		"nodeType": "YulIdentifier",
+																		"src": "4905:1:0"
+																	},
+																	{
+																		"name": "newImplementation",
+																		"nativeSrc": "4908:17:0",
+																		"nodeType": "YulIdentifier",
+																		"src": "4908:17:0"
+																	}
+																],
+																"functionName": {
+																	"name": "sstore",
+																	"nativeSrc": "4898:6:0",
+																	"nodeType": "YulIdentifier",
+																	"src": "4898:6:0"
+																},
+																"nativeSrc": "4898:28:0",
+																"nodeType": "YulFunctionCall",
+																"src": "4898:28:0"
+															},
+															"nativeSrc": "4898:28:0",
+															"nodeType": "YulExpressionStatement",
+															"src": "4898:28:0"
+														},
+														{
+															"body": {
+																"nativeSrc": "5071:501:0",
+																"nodeType": "YulBlock",
+																"src": "5071:501:0",
+																"statements": [
+																	{
+																		"nativeSrc": "5169:20:0",
+																		"nodeType": "YulVariableDeclaration",
+																		"src": "5169:20:0",
+																		"value": {
+																			"arguments": [
+																				{
+																					"kind": "number",
+																					"nativeSrc": "5184:4:0",
+																					"nodeType": "YulLiteral",
+																					"src": "5184:4:0",
+																					"type": "",
+																					"value": "0x40"
+																				}
+																			],
+																			"functionName": {
+																				"name": "mload",
+																				"nativeSrc": "5178:5:0",
+																				"nodeType": "YulIdentifier",
+																				"src": "5178:5:0"
+																			},
+																			"nativeSrc": "5178:11:0",
+																			"nodeType": "YulFunctionCall",
+																			"src": "5178:11:0"
+																		},
+																		"variables": [
+																			{
+																				"name": "m",
+																				"nativeSrc": "5173:1:0",
+																				"nodeType": "YulTypedName",
+																				"src": "5173:1:0",
+																				"type": ""
+																			}
+																		]
+																	},
+																	{
+																		"expression": {
+																			"arguments": [
+																				{
+																					"name": "m",
+																					"nativeSrc": "5219:1:0",
+																					"nodeType": "YulIdentifier",
+																					"src": "5219:1:0"
+																				},
+																				{
+																					"name": "data.offset",
+																					"nativeSrc": "5222:11:0",
+																					"nodeType": "YulIdentifier",
+																					"src": "5222:11:0"
+																				},
+																				{
+																					"name": "data.length",
+																					"nativeSrc": "5235:11:0",
+																					"nodeType": "YulIdentifier",
+																					"src": "5235:11:0"
+																				}
+																			],
+																			"functionName": {
+																				"name": "calldatacopy",
+																				"nativeSrc": "5206:12:0",
+																				"nodeType": "YulIdentifier",
+																				"src": "5206:12:0"
+																			},
+																			"nativeSrc": "5206:41:0",
+																			"nodeType": "YulFunctionCall",
+																			"src": "5206:41:0"
+																		},
+																		"nativeSrc": "5206:41:0",
+																		"nodeType": "YulExpressionStatement",
+																		"src": "5206:41:0"
+																	},
+																	{
+																		"body": {
+																			"nativeSrc": "5364:194:0",
+																			"nodeType": "YulBlock",
+																			"src": "5364:194:0",
+																			"statements": [
+																				{
+																					"expression": {
+																						"arguments": [
+																							{
+																								"name": "m",
+																								"nativeSrc": "5466:1:0",
+																								"nodeType": "YulIdentifier",
+																								"src": "5466:1:0"
+																							},
+																							{
+																								"kind": "number",
+																								"nativeSrc": "5469:4:0",
+																								"nodeType": "YulLiteral",
+																								"src": "5469:4:0",
+																								"type": "",
+																								"value": "0x00"
+																							},
+																							{
+																								"arguments": [],
+																								"functionName": {
+																									"name": "returndatasize",
+																									"nativeSrc": "5475:14:0",
+																									"nodeType": "YulIdentifier",
+																									"src": "5475:14:0"
+																								},
+																								"nativeSrc": "5475:16:0",
+																								"nodeType": "YulFunctionCall",
+																								"src": "5475:16:0"
+																							}
+																						],
+																						"functionName": {
+																							"name": "returndatacopy",
+																							"nativeSrc": "5451:14:0",
+																							"nodeType": "YulIdentifier",
+																							"src": "5451:14:0"
+																						},
+																						"nativeSrc": "5451:41:0",
+																						"nodeType": "YulFunctionCall",
+																						"src": "5451:41:0"
+																					},
+																					"nativeSrc": "5451:41:0",
+																					"nodeType": "YulExpressionStatement",
+																					"src": "5451:41:0"
+																				},
+																				{
+																					"expression": {
+																						"arguments": [
+																							{
+																								"name": "m",
+																								"nativeSrc": "5520:1:0",
+																								"nodeType": "YulIdentifier",
+																								"src": "5520:1:0"
+																							},
+																							{
+																								"arguments": [],
+																								"functionName": {
+																									"name": "returndatasize",
+																									"nativeSrc": "5523:14:0",
+																									"nodeType": "YulIdentifier",
+																									"src": "5523:14:0"
+																								},
+																								"nativeSrc": "5523:16:0",
+																								"nodeType": "YulFunctionCall",
+																								"src": "5523:16:0"
+																							}
+																						],
+																						"functionName": {
+																							"name": "revert",
+																							"nativeSrc": "5513:6:0",
+																							"nodeType": "YulIdentifier",
+																							"src": "5513:6:0"
+																						},
+																						"nativeSrc": "5513:27:0",
+																						"nodeType": "YulFunctionCall",
+																						"src": "5513:27:0"
+																					},
+																					"nativeSrc": "5513:27:0",
+																					"nodeType": "YulExpressionStatement",
+																					"src": "5513:27:0"
+																				}
+																			]
+																		},
+																		"condition": {
+																			"arguments": [
+																				{
+																					"arguments": [
+																						{
+																							"arguments": [],
+																							"functionName": {
+																								"name": "gas",
+																								"nativeSrc": "5287:3:0",
+																								"nodeType": "YulIdentifier",
+																								"src": "5287:3:0"
+																							},
+																							"nativeSrc": "5287:5:0",
+																							"nodeType": "YulFunctionCall",
+																							"src": "5287:5:0"
+																						},
+																						{
+																							"name": "newImplementation",
+																							"nativeSrc": "5294:17:0",
+																							"nodeType": "YulIdentifier",
+																							"src": "5294:17:0"
+																						},
+																						{
+																							"name": "m",
+																							"nativeSrc": "5313:1:0",
+																							"nodeType": "YulIdentifier",
+																							"src": "5313:1:0"
+																						},
+																						{
+																							"name": "data.length",
+																							"nativeSrc": "5316:11:0",
+																							"nodeType": "YulIdentifier",
+																							"src": "5316:11:0"
+																						},
+																						{
+																							"arguments": [],
+																							"functionName": {
+																								"name": "codesize",
+																								"nativeSrc": "5329:8:0",
+																								"nodeType": "YulIdentifier",
+																								"src": "5329:8:0"
+																							},
+																							"nativeSrc": "5329:10:0",
+																							"nodeType": "YulFunctionCall",
+																							"src": "5329:10:0"
+																						},
+																						{
+																							"kind": "number",
+																							"nativeSrc": "5341:4:0",
+																							"nodeType": "YulLiteral",
+																							"src": "5341:4:0",
+																							"type": "",
+																							"value": "0x00"
+																						}
+																					],
+																					"functionName": {
+																						"name": "delegatecall",
+																						"nativeSrc": "5274:12:0",
+																						"nodeType": "YulIdentifier",
+																						"src": "5274:12:0"
+																					},
+																					"nativeSrc": "5274:72:0",
+																					"nodeType": "YulFunctionCall",
+																					"src": "5274:72:0"
+																				}
+																			],
+																			"functionName": {
+																				"name": "iszero",
+																				"nativeSrc": "5267:6:0",
+																				"nodeType": "YulIdentifier",
+																				"src": "5267:6:0"
+																			},
+																			"nativeSrc": "5267:80:0",
+																			"nodeType": "YulFunctionCall",
+																			"src": "5267:80:0"
+																		},
+																		"nativeSrc": "5264:294:0",
+																		"nodeType": "YulIf",
+																		"src": "5264:294:0"
+																	}
+																]
+															},
+															"condition": {
+																"name": "data.length",
+																"nativeSrc": "5059:11:0",
+																"nodeType": "YulIdentifier",
+																"src": "5059:11:0"
+															},
+															"nativeSrc": "5056:516:0",
+															"nodeType": "YulIf",
+															"src": "5056:516:0"
+														}
+													]
+												},
+												"documentation": "@solidity memory-safe-assembly",
+												"evmVersion": "shanghai",
+												"externalReferences": [
+													{
+														"declaration": 34,
+														"isOffset": false,
+														"isSlot": false,
+														"src": "4440:28:0",
+														"valueSize": 1
+													},
+													{
+														"declaration": 30,
+														"isOffset": false,
+														"isSlot": false,
+														"src": "4840:25:0",
+														"valueSize": 1
+													},
+													{
+														"declaration": 56,
+														"isOffset": false,
+														"isSlot": false,
+														"src": "5059:11:0",
+														"suffix": "length",
+														"valueSize": 1
+													},
+													{
+														"declaration": 56,
+														"isOffset": false,
+														"isSlot": false,
+														"src": "5235:11:0",
+														"suffix": "length",
+														"valueSize": 1
+													},
+													{
+														"declaration": 56,
+														"isOffset": false,
+														"isSlot": false,
+														"src": "5316:11:0",
+														"suffix": "length",
+														"valueSize": 1
+													},
+													{
+														"declaration": 56,
+														"isOffset": true,
+														"isSlot": false,
+														"src": "5222:11:0",
+														"suffix": "offset",
+														"valueSize": 1
+													},
+													{
+														"declaration": 54,
+														"isOffset": false,
+														"isSlot": false,
+														"src": "4278:17:0",
+														"valueSize": 1
+													},
+													{
+														"declaration": 54,
+														"isOffset": false,
+														"isSlot": false,
+														"src": "4315:17:0",
+														"valueSize": 1
+													},
+													{
+														"declaration": 54,
+														"isOffset": false,
+														"isSlot": false,
+														"src": "4600:17:0",
+														"valueSize": 1
+													},
+													{
+														"declaration": 54,
+														"isOffset": false,
+														"isSlot": false,
+														"src": "4867:17:0",
+														"valueSize": 1
+													},
+													{
+														"declaration": 54,
+														"isOffset": false,
+														"isSlot": false,
+														"src": "4908:17:0",
+														"valueSize": 1
+													},
+													{
+														"declaration": 54,
+														"isOffset": false,
+														"isSlot": false,
+														"src": "5294:17:0",
+														"valueSize": 1
+													}
+												],
+												"id": 65,
+												"nodeType": "InlineAssembly",
+												"src": "4255:1327:0"
+											}
+										]
+									},
+									"documentation": {
+										"id": 52,
+										"nodeType": "StructuredDocumentation",
+										"src": "3813:195:0",
+										"text": "@dev Upgrades the proxy's implementation to `newImplementation`.\n Emits a {Upgraded} event.\n Note: Passing in empty `data` skips the delegatecall to `newImplementation`."
+									},
+									"functionSelector": "4f1ef286",
+									"id": 67,
+									"implemented": true,
+									"kind": "function",
+									"modifiers": [
+										{
+											"id": 59,
+											"kind": "modifierInvocation",
+											"modifierName": {
+												"id": 58,
+												"name": "onlyProxy",
+												"nameLocations": [
+													"4142:9:0"
+												],
+												"nodeType": "IdentifierPath",
+												"referencedDeclaration": 77,
+												"src": "4142:9:0"
+											},
+											"nodeType": "ModifierInvocation",
+											"src": "4142:9:0"
+										}
+									],
+									"name": "upgradeToAndCall",
+									"nameLocation": "4022:16:0",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 57,
+										"nodeType": "ParameterList",
+										"parameters": [
+											{
+												"constant": false,
+												"id": 54,
+												"mutability": "mutable",
+												"name": "newImplementation",
+												"nameLocation": "4047:17:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 67,
+												"src": "4039:25:0",
+												"stateVariable": false,
+												"storageLocation": "default",
+												"typeDescriptions": {
+													"typeIdentifier": "t_address",
+													"typeString": "address"
+												},
+												"typeName": {
+													"id": 53,
+													"name": "address",
+													"nodeType": "ElementaryTypeName",
+													"src": "4039:7:0",
+													"stateMutability": "nonpayable",
+													"typeDescriptions": {
+														"typeIdentifier": "t_address",
+														"typeString": "address"
+													}
+												},
+												"visibility": "internal"
+											},
+											{
+												"constant": false,
+												"id": 56,
+												"mutability": "mutable",
+												"name": "data",
+												"nameLocation": "4081:4:0",
+												"nodeType": "VariableDeclaration",
+												"scope": 67,
+												"src": "4066:19:0",
+												"stateVariable": false,
+												"storageLocation": "calldata",
+												"typeDescriptions": {
+													"typeIdentifier": "t_bytes_calldata_ptr",
+													"typeString": "bytes"
+												},
+												"typeName": {
+													"id": 55,
+													"name": "bytes",
+													"nodeType": "ElementaryTypeName",
+													"src": "4066:5:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_bytes_storage_ptr",
+														"typeString": "bytes"
+													}
+												},
+												"visibility": "internal"
+											}
+										],
+										"src": "4038:48:0"
+									},
+									"returnParameters": {
+										"id": 60,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "4156:0:0"
+									},
+									"scope": 88,
+									"src": "4013:1575:0",
+									"stateMutability": "payable",
+									"virtual": true,
+									"visibility": "public"
+								},
+								{
+									"body": {
+										"id": 76,
+										"nodeType": "Block",
+										"src": "5686:544:0",
+										"statements": [
+											{
+												"assignments": [
+													71
+												],
+												"declarations": [
+													{
+														"constant": false,
+														"id": 71,
+														"mutability": "mutable",
+														"name": "s",
+														"nameLocation": "5704:1:0",
+														"nodeType": "VariableDeclaration",
+														"scope": 76,
+														"src": "5696:9:0",
+														"stateVariable": false,
+														"storageLocation": "default",
+														"typeDescriptions": {
+															"typeIdentifier": "t_uint256",
+															"typeString": "uint256"
+														},
+														"typeName": {
+															"id": 70,
+															"name": "uint256",
+															"nodeType": "ElementaryTypeName",
+															"src": "5696:7:0",
+															"typeDescriptions": {
+																"typeIdentifier": "t_uint256",
+																"typeString": "uint256"
+															}
+														},
+														"visibility": "internal"
+													}
+												],
+												"id": 73,
+												"initialValue": {
+													"id": 72,
+													"name": "__self",
+													"nodeType": "Identifier",
+													"overloadedDeclarations": [],
+													"referencedDeclaration": 21,
+													"src": "5708:6:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"nodeType": "VariableDeclarationStatement",
+												"src": "5696:18:0"
+											},
+											{
+												"AST": {
+													"nativeSrc": "5776:437:0",
+													"nodeType": "YulBlock",
+													"src": "5776:437:0",
+													"statements": [
+														{
+															"body": {
+																"nativeSrc": "6080:123:0",
+																"nodeType": "YulBlock",
+																"src": "6080:123:0",
+																"statements": [
+																	{
+																		"expression": {
+																			"arguments": [
+																				{
+																					"kind": "number",
+																					"nativeSrc": "6105:4:0",
+																					"nodeType": "YulLiteral",
+																					"src": "6105:4:0",
+																					"type": "",
+																					"value": "0x00"
+																				},
+																				{
+																					"kind": "number",
+																					"nativeSrc": "6111:10:0",
+																					"nodeType": "YulLiteral",
+																					"src": "6111:10:0",
+																					"type": "",
+																					"value": "0x9f03a026"
+																				}
+																			],
+																			"functionName": {
+																				"name": "mstore",
+																				"nativeSrc": "6098:6:0",
+																				"nodeType": "YulIdentifier",
+																				"src": "6098:6:0"
+																			},
+																			"nativeSrc": "6098:24:0",
+																			"nodeType": "YulFunctionCall",
+																			"src": "6098:24:0"
+																		},
+																		"nativeSrc": "6098:24:0",
+																		"nodeType": "YulExpressionStatement",
+																		"src": "6098:24:0"
+																	},
+																	{
+																		"expression": {
+																			"arguments": [
+																				{
+																					"kind": "number",
+																					"nativeSrc": "6178:4:0",
+																					"nodeType": "YulLiteral",
+																					"src": "6178:4:0",
+																					"type": "",
+																					"value": "0x1c"
+																				},
+																				{
+																					"kind": "number",
+																					"nativeSrc": "6184:4:0",
+																					"nodeType": "YulLiteral",
+																					"src": "6184:4:0",
+																					"type": "",
+																					"value": "0x04"
+																				}
+																			],
+																			"functionName": {
+																				"name": "revert",
+																				"nativeSrc": "6171:6:0",
+																				"nodeType": "YulIdentifier",
+																				"src": "6171:6:0"
+																			},
+																			"nativeSrc": "6171:18:0",
+																			"nodeType": "YulFunctionCall",
+																			"src": "6171:18:0"
+																		},
+																		"nativeSrc": "6171:18:0",
+																		"nodeType": "YulExpressionStatement",
+																		"src": "6171:18:0"
+																	}
+																]
+															},
+															"condition": {
+																"arguments": [
+																	{
+																		"name": "s",
+																		"nativeSrc": "6066:1:0",
+																		"nodeType": "YulIdentifier",
+																		"src": "6066:1:0"
+																	},
+																	{
+																		"arguments": [],
+																		"functionName": {
+																			"name": "address",
+																			"nativeSrc": "6069:7:0",
+																			"nodeType": "YulIdentifier",
+																			"src": "6069:7:0"
+																		},
+																		"nativeSrc": "6069:9:0",
+																		"nodeType": "YulFunctionCall",
+																		"src": "6069:9:0"
+																	}
+																],
+																"functionName": {
+																	"name": "eq",
+																	"nativeSrc": "6063:2:0",
+																	"nodeType": "YulIdentifier",
+																	"src": "6063:2:0"
+																},
+																"nativeSrc": "6063:16:0",
+																"nodeType": "YulFunctionCall",
+																"src": "6063:16:0"
+															},
+															"nativeSrc": "6060:143:0",
+															"nodeType": "YulIf",
+															"src": "6060:143:0"
+														}
+													]
+												},
+												"documentation": "@solidity memory-safe-assembly",
+												"evmVersion": "shanghai",
+												"externalReferences": [
+													{
+														"declaration": 71,
+														"isOffset": false,
+														"isSlot": false,
+														"src": "6066:1:0",
+														"valueSize": 1
+													}
+												],
+												"id": 74,
+												"nodeType": "InlineAssembly",
+												"src": "5767:446:0"
+											},
+											{
+												"id": 75,
+												"nodeType": "PlaceholderStatement",
+												"src": "6222:1:0"
+											}
+										]
+									},
+									"documentation": {
+										"id": 68,
+										"nodeType": "StructuredDocumentation",
+										"src": "5594:66:0",
+										"text": "@dev Requires that the execution is performed through a proxy."
+									},
+									"id": 77,
+									"name": "onlyProxy",
+									"nameLocation": "5674:9:0",
+									"nodeType": "ModifierDefinition",
+									"parameters": {
+										"id": 69,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "5683:2:0"
+									},
+									"src": "5665:565:0",
+									"virtual": false,
+									"visibility": "internal"
+								},
+								{
+									"body": {
+										"id": 86,
+										"nodeType": "Block",
+										"src": "6381:282:0",
+										"statements": [
+											{
+												"assignments": [
+													81
+												],
+												"declarations": [
+													{
+														"constant": false,
+														"id": 81,
+														"mutability": "mutable",
+														"name": "s",
+														"nameLocation": "6399:1:0",
+														"nodeType": "VariableDeclaration",
+														"scope": 86,
+														"src": "6391:9:0",
+														"stateVariable": false,
+														"storageLocation": "default",
+														"typeDescriptions": {
+															"typeIdentifier": "t_uint256",
+															"typeString": "uint256"
+														},
+														"typeName": {
+															"id": 80,
+															"name": "uint256",
+															"nodeType": "ElementaryTypeName",
+															"src": "6391:7:0",
+															"typeDescriptions": {
+																"typeIdentifier": "t_uint256",
+																"typeString": "uint256"
+															}
+														},
+														"visibility": "internal"
+													}
+												],
+												"id": 83,
+												"initialValue": {
+													"id": 82,
+													"name": "__self",
+													"nodeType": "Identifier",
+													"overloadedDeclarations": [],
+													"referencedDeclaration": 21,
+													"src": "6403:6:0",
+													"typeDescriptions": {
+														"typeIdentifier": "t_uint256",
+														"typeString": "uint256"
+													}
+												},
+												"nodeType": "VariableDeclarationStatement",
+												"src": "6391:18:0"
+											},
+											{
+												"AST": {
+													"nativeSrc": "6471:175:0",
+													"nodeType": "YulBlock",
+													"src": "6471:175:0",
+													"statements": [
+														{
+															"body": {
+																"nativeSrc": "6513:123:0",
+																"nodeType": "YulBlock",
+																"src": "6513:123:0",
+																"statements": [
+																	{
+																		"expression": {
+																			"arguments": [
+																				{
+																					"kind": "number",
+																					"nativeSrc": "6538:4:0",
+																					"nodeType": "YulLiteral",
+																					"src": "6538:4:0",
+																					"type": "",
+																					"value": "0x00"
+																				},
+																				{
+																					"kind": "number",
+																					"nativeSrc": "6544:10:0",
+																					"nodeType": "YulLiteral",
+																					"src": "6544:10:0",
+																					"type": "",
+																					"value": "0x9f03a026"
+																				}
+																			],
+																			"functionName": {
+																				"name": "mstore",
+																				"nativeSrc": "6531:6:0",
+																				"nodeType": "YulIdentifier",
+																				"src": "6531:6:0"
+																			},
+																			"nativeSrc": "6531:24:0",
+																			"nodeType": "YulFunctionCall",
+																			"src": "6531:24:0"
+																		},
+																		"nativeSrc": "6531:24:0",
+																		"nodeType": "YulExpressionStatement",
+																		"src": "6531:24:0"
+																	},
+																	{
+																		"expression": {
+																			"arguments": [
+																				{
+																					"kind": "number",
+																					"nativeSrc": "6611:4:0",
+																					"nodeType": "YulLiteral",
+																					"src": "6611:4:0",
+																					"type": "",
+																					"value": "0x1c"
+																				},
+																				{
+																					"kind": "number",
+																					"nativeSrc": "6617:4:0",
+																					"nodeType": "YulLiteral",
+																					"src": "6617:4:0",
+																					"type": "",
+																					"value": "0x04"
+																				}
+																			],
+																			"functionName": {
+																				"name": "revert",
+																				"nativeSrc": "6604:6:0",
+																				"nodeType": "YulIdentifier",
+																				"src": "6604:6:0"
+																			},
+																			"nativeSrc": "6604:18:0",
+																			"nodeType": "YulFunctionCall",
+																			"src": "6604:18:0"
+																		},
+																		"nativeSrc": "6604:18:0",
+																		"nodeType": "YulExpressionStatement",
+																		"src": "6604:18:0"
+																	}
+																]
+															},
+															"condition": {
+																"arguments": [
+																	{
+																		"arguments": [
+																			{
+																				"name": "s",
+																				"nativeSrc": "6498:1:0",
+																				"nodeType": "YulIdentifier",
+																				"src": "6498:1:0"
+																			},
+																			{
+																				"arguments": [],
+																				"functionName": {
+																					"name": "address",
+																					"nativeSrc": "6501:7:0",
+																					"nodeType": "YulIdentifier",
+																					"src": "6501:7:0"
+																				},
+																				"nativeSrc": "6501:9:0",
+																				"nodeType": "YulFunctionCall",
+																				"src": "6501:9:0"
+																			}
+																		],
+																		"functionName": {
+																			"name": "eq",
+																			"nativeSrc": "6495:2:0",
+																			"nodeType": "YulIdentifier",
+																			"src": "6495:2:0"
+																		},
+																		"nativeSrc": "6495:16:0",
+																		"nodeType": "YulFunctionCall",
+																		"src": "6495:16:0"
+																	}
+																],
+																"functionName": {
+																	"name": "iszero",
+																	"nativeSrc": "6488:6:0",
+																	"nodeType": "YulIdentifier",
+																	"src": "6488:6:0"
+																},
+																"nativeSrc": "6488:24:0",
+																"nodeType": "YulFunctionCall",
+																"src": "6488:24:0"
+															},
+															"nativeSrc": "6485:151:0",
+															"nodeType": "YulIf",
+															"src": "6485:151:0"
+														}
+													]
+												},
+												"documentation": "@solidity memory-safe-assembly",
+												"evmVersion": "shanghai",
+												"externalReferences": [
+													{
+														"declaration": 81,
+														"isOffset": false,
+														"isSlot": false,
+														"src": "6498:1:0",
+														"valueSize": 1
+													}
+												],
+												"id": 84,
+												"nodeType": "InlineAssembly",
+												"src": "6462:184:0"
+											},
+											{
+												"id": 85,
+												"nodeType": "PlaceholderStatement",
+												"src": "6655:1:0"
+											}
+										]
+									},
+									"documentation": {
+										"id": 78,
+										"nodeType": "StructuredDocumentation",
+										"src": "6236:116:0",
+										"text": "@dev Requires that the execution is NOT performed via delegatecall.\n This is the opposite of `onlyProxy`."
+									},
+									"id": 87,
+									"name": "notDelegated",
+									"nameLocation": "6366:12:0",
+									"nodeType": "ModifierDefinition",
+									"parameters": {
+										"id": 79,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "6378:2:0"
+									},
+									"src": "6357:306:0",
+									"virtual": false,
+									"visibility": "internal"
+								}
+							],
+							"scope": 89,
+							"src": "636:6029:0",
+							"usedErrors": [
+								5,
+								8
+							],
+							"usedEvents": [
+								26
+							]
+						}
+					],
+					"src": "32:6633:0"
+				},
+				"id": 0
+			}
+		}
+	}
+}

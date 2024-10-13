@@ -1,0 +1,76 @@
+{
+	"compiler": {
+		"version": "0.8.23+commit.f704f362"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"name": "HexLengthInsufficient",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "TooBigForSmallString",
+				"type": "error"
+			}
+		],
+		"devdoc": {
+			"author": "Solady (https://github.com/vectorized/solady/blob/main/src/utils/LibString.sol)Modified from Solmate (https://github.com/transmissions11/solmate/blob/main/src/utils/LibString.sol)",
+			"details": "Note: For performance and bytecode compactness, most of the string operations are restricted to byte strings (7-bit ASCII), except where otherwise specified. Usage of byte string operations on charsets with runes spanning two or more bytes can lead to undefined behavior.",
+			"errors": {
+				"HexLengthInsufficient()": [
+					{
+						"details": "The length of the output is too small to contain all the hex digits."
+					}
+				],
+				"TooBigForSmallString()": [
+					{
+						"details": "The length of the string is more than 32 bytes."
+					}
+				]
+			},
+			"kind": "dev",
+			"methods": {},
+			"stateVariables": {
+				"NOT_FOUND": {
+					"details": "The constant returned when the `search` is not found in the string."
+				}
+			},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"notice": "Library for converting numbers into strings and other string operations.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/LibString.sol": "LibString"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/LibString.sol": {
+			"keccak256": "0xf27c9f02a895572ec03cc2a73743d2cee07f6b944a6d94239c7158349902ca89",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://9b3d637f89a02b1c9228a2eb8c59283fa6c611d6f4ffa233b46d73ac7d4c62a1",
+				"dweb:/ipfs/QmaVhcWtixrUb7dieCjzvfUKrAHHAvKL92rrvjt673Am8G"
+			]
+		}
+	},
+	"version": 1
+}

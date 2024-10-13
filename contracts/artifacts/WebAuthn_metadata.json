@@ -1,0 +1,98 @@
+{
+	"compiler": {
+		"version": "0.8.23+commit.f704f362"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"author": "Coinbase (https://github.com/base-org/webauthn-sol)Daimo (https://github.com/daimo-eth/p256-verifier/blob/master/src/WebAuthn.sol)",
+			"details": "Attempts to use the RIP-7212 precompile for signature verification.      If precompile verification fails, it falls back to FreshCryptoLib.",
+			"kind": "dev",
+			"methods": {},
+			"stateVariables": {
+				"_AUTH_DATA_FLAGS_UP": {
+					"details": "Bit 0 of the authenticator data struct, corresponding to the \"User Present\" bit.      See https://www.w3.org/TR/webauthn-2/#flags."
+				},
+				"_AUTH_DATA_FLAGS_UV": {
+					"details": "Bit 2 of the authenticator data struct, corresponding to the \"User Verified\" bit.      See https://www.w3.org/TR/webauthn-2/#flags."
+				},
+				"_EXPECTED_TYPE_HASH": {
+					"details": "The expected type (hash) in the client data JSON when verifying assertion signatures.      See https://www.w3.org/TR/webauthn-2/#dom-collectedclientdata-type"
+				},
+				"_P256_N_DIV_2": {
+					"details": "Secp256r1 curve order / 2 used as guard to prevent signature malleability issue."
+				},
+				"_VERIFIER": {
+					"details": "The precompiled contract address to use for signature verification in the “secp256r1” elliptic curve.      See https://github.com/ethereum/RIPs/blob/master/RIPS/rip-7212.md."
+				}
+			},
+			"title": "WebAuthn",
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"notice": "A library for verifying WebAuthn Authentication Assertions, built off the work         of Daimo.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/WebAuthn.sol": "WebAuthn"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/Base64.sol": {
+			"keccak256": "0x4b469aac90232dad7f4ca1d5efb1c03a7198137ca2862ee2d88d638418ab886a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://529aca467bc7c9ea4a2b387d41a85339dc0be3a3e2fd0c000ac96147c112ab7f",
+				"dweb:/ipfs/QmSWt3nDKUnPF468qKURBuJNQPPu82Aw3ExbxWkzcw2rys"
+			]
+		},
+		"contracts/FCL_ecdsa.sol": {
+			"keccak256": "0xae24708fae61a48b41d53a85b64949034e65cd81438e1742ecf4dd507ee171c6",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a70223b0b65da55a62243f3cfca844c75e4ad3b7803686bb234e96776f9c4c7b",
+				"dweb:/ipfs/QmXSTih9jTud7ssZUnjfPcwjRJAwnj1boZDfms7UpWucHr"
+			]
+		},
+		"contracts/FCL_elliptic.sol": {
+			"keccak256": "0x421a429ea8f2277e9fd6e0b89acb1a3482a31ecfdca609d2b106b85d8075ae8e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://23f5c9a9a51ef33db13cacd985bbc6e09d474c2a43585c38b3468731451b4732",
+				"dweb:/ipfs/Qme1nSC9SZWFKxWfnGJCcqrSRza67MA5zCf5qAvECNkpL8"
+			]
+		},
+		"contracts/LibString.sol": {
+			"keccak256": "0xf27c9f02a895572ec03cc2a73743d2cee07f6b944a6d94239c7158349902ca89",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://9b3d637f89a02b1c9228a2eb8c59283fa6c611d6f4ffa233b46d73ac7d4c62a1",
+				"dweb:/ipfs/QmaVhcWtixrUb7dieCjzvfUKrAHHAvKL92rrvjt673Am8G"
+			]
+		},
+		"contracts/WebAuthn.sol": {
+			"keccak256": "0x044cc5d8427e214ee27e7db97fdad64984158137e2c54a3de0a1ffb0a740965e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a5ba4ca50e248bdd477577390c83a3be992dbc5630059c814749c0b17876ca13",
+				"dweb:/ipfs/QmXkiQHwbvZsjNrKEHUT3gFPybwEZhxQhSiAj81NAGEq43"
+			]
+		}
+	},
+	"version": 1
+}

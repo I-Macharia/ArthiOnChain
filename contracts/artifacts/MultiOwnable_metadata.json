@@ -1,0 +1,584 @@
+{
+	"compiler": {
+		"version": "0.8.23+commit.f704f362"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "bytes",
+						"name": "owner",
+						"type": "bytes"
+					}
+				],
+				"name": "AlreadyOwner",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes",
+						"name": "owner",
+						"type": "bytes"
+					}
+				],
+				"name": "InvalidEthereumAddressOwner",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes",
+						"name": "owner",
+						"type": "bytes"
+					}
+				],
+				"name": "InvalidOwnerBytesLength",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "LastOwner",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					}
+				],
+				"name": "NoOwnerAtIndex",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "ownersRemaining",
+						"type": "uint256"
+					}
+				],
+				"name": "NotLastOwner",
+				"type": "error"
+			},
+			{
+				"inputs": [],
+				"name": "Unauthorized",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "expectedOwner",
+						"type": "bytes"
+					},
+					{
+						"internalType": "bytes",
+						"name": "actualOwner",
+						"type": "bytes"
+					}
+				],
+				"name": "WrongOwnerAtIndex",
+				"type": "error"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes",
+						"name": "owner",
+						"type": "bytes"
+					}
+				],
+				"name": "AddOwner",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes",
+						"name": "owner",
+						"type": "bytes"
+					}
+				],
+				"name": "RemoveOwner",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "owner",
+						"type": "address"
+					}
+				],
+				"name": "addOwnerAddress",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "x",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "y",
+						"type": "bytes32"
+					}
+				],
+				"name": "addOwnerPublicKey",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					}
+				],
+				"name": "isOwnerAddress",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes",
+						"name": "account",
+						"type": "bytes"
+					}
+				],
+				"name": "isOwnerBytes",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "x",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "y",
+						"type": "bytes32"
+					}
+				],
+				"name": "isOwnerPublicKey",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "nextOwnerIndex",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					}
+				],
+				"name": "ownerAtIndex",
+				"outputs": [
+					{
+						"internalType": "bytes",
+						"name": "",
+						"type": "bytes"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "ownerCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "owner",
+						"type": "bytes"
+					}
+				],
+				"name": "removeLastOwner",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "index",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "owner",
+						"type": "bytes"
+					}
+				],
+				"name": "removeOwnerAtIndex",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "removedOwnersCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"author": "Coinbase (https://github.com/coinbase/smart-wallet)",
+			"errors": {
+				"AlreadyOwner(bytes)": [
+					{
+						"params": {
+							"owner": "The owner bytes."
+						}
+					}
+				],
+				"InvalidEthereumAddressOwner(bytes)": [
+					{
+						"params": {
+							"owner": "The invalid owner."
+						}
+					}
+				],
+				"InvalidOwnerBytesLength(bytes)": [
+					{
+						"params": {
+							"owner": "The invalid owner."
+						}
+					}
+				],
+				"NoOwnerAtIndex(uint256)": [
+					{
+						"params": {
+							"index": "The targeted index for removal."
+						}
+					}
+				],
+				"NotLastOwner(uint256)": [
+					{
+						"params": {
+							"ownersRemaining": "The number of current owners."
+						}
+					}
+				],
+				"WrongOwnerAtIndex(uint256,bytes,bytes)": [
+					{
+						"params": {
+							"actualOwner": "The actual owner at `index`.",
+							"expectedOwner": "The owner passed in the remove call.",
+							"index": "The index of the owner to be removed."
+						}
+					}
+				]
+			},
+			"events": {
+				"AddOwner(uint256,bytes)": {
+					"params": {
+						"index": "The owner index of the owner added.",
+						"owner": "The owner added."
+					}
+				},
+				"RemoveOwner(uint256,bytes)": {
+					"params": {
+						"index": "The owner index of the owner removed.",
+						"owner": "The owner removed."
+					}
+				}
+			},
+			"kind": "dev",
+			"methods": {
+				"addOwnerAddress(address)": {
+					"params": {
+						"owner": "The owner address."
+					}
+				},
+				"addOwnerPublicKey(bytes32,bytes32)": {
+					"params": {
+						"x": "The owner public key x coordinate.",
+						"y": "The owner public key y coordinate."
+					}
+				},
+				"isOwnerAddress(address)": {
+					"params": {
+						"account": "The account address to check."
+					},
+					"returns": {
+						"_0": "`true` if the account is an owner else `false`."
+					}
+				},
+				"isOwnerBytes(bytes)": {
+					"params": {
+						"account": "The account, should be ABI encoded address or public key."
+					},
+					"returns": {
+						"_0": "`true` if the account is an owner else `false`."
+					}
+				},
+				"isOwnerPublicKey(bytes32,bytes32)": {
+					"params": {
+						"x": "The public key x coordinate.",
+						"y": "The public key y coordinate."
+					},
+					"returns": {
+						"_0": "`true` if the account is an owner else `false`."
+					}
+				},
+				"nextOwnerIndex()": {
+					"returns": {
+						"_0": "The next index that will be used to add a new owner."
+					}
+				},
+				"ownerAtIndex(uint256)": {
+					"params": {
+						"index": "The index to lookup."
+					},
+					"returns": {
+						"_0": "The owner bytes (empty if no owner is registered at this `index`)."
+					}
+				},
+				"ownerCount()": {
+					"returns": {
+						"_0": "The current owner count"
+					}
+				},
+				"removeLastOwner(uint256,bytes)": {
+					"details": "Reverts if the owner is not registered at `index`.Reverts if there is currently more than one owner.Reverts if `owner` does not match bytes found at `index`.",
+					"params": {
+						"index": "The index of the owner to be removed.",
+						"owner": "The ABI encoded bytes of the owner to be removed."
+					}
+				},
+				"removeOwnerAtIndex(uint256,bytes)": {
+					"details": "Reverts if the owner is not registered at `index`.Reverts if there is currently only one owner.Reverts if `owner` does not match bytes found at `index`.",
+					"params": {
+						"index": "The index of the owner to be removed.",
+						"owner": "The ABI encoded bytes of the owner to be removed."
+					}
+				},
+				"removedOwnersCount()": {
+					"details": "Used with `this.nextOwnerIndex` to avoid removing all owners",
+					"returns": {
+						"_0": "The number of owners that have been removed."
+					}
+				}
+			},
+			"stateVariables": {
+				"MUTLI_OWNABLE_STORAGE_LOCATION": {
+					"details": "Slot for the `MultiOwnableStorage` struct in storage.      Computed from      keccak256(abi.encode(uint256(keccak256(\"coinbase.storage.MultiOwnable\")) - 1)) & ~bytes32(uint256(0xff))      Follows ERC-7201 (see https://eips.ethereum.org/EIPS/eip-7201)."
+				}
+			},
+			"title": "Multi Ownable",
+			"version": 1
+		},
+		"userdoc": {
+			"errors": {
+				"AlreadyOwner(bytes)": [
+					{
+						"notice": "Thrown when trying to add an already registered owner."
+					}
+				],
+				"InvalidEthereumAddressOwner(bytes)": [
+					{
+						"notice": "Thrown if a provided owner is 32 bytes long but does not fit in an `address` type."
+					}
+				],
+				"InvalidOwnerBytesLength(bytes)": [
+					{
+						"notice": "Thrown when a provided owner is neither 64 bytes long (for public key)         nor a ABI encoded address."
+					}
+				],
+				"LastOwner()": [
+					{
+						"notice": "Thrown when removeOwnerAtIndex is called and there is only one current owner."
+					}
+				],
+				"NoOwnerAtIndex(uint256)": [
+					{
+						"notice": "Thrown when trying to remove an owner from an index that is empty."
+					}
+				],
+				"NotLastOwner(uint256)": [
+					{
+						"notice": "Thrown when removeLastOwner is called and there is more than one current owner."
+					}
+				],
+				"Unauthorized()": [
+					{
+						"notice": "Thrown when the `msg.sender` is not an owner and is trying to call a privileged function."
+					}
+				],
+				"WrongOwnerAtIndex(uint256,bytes,bytes)": [
+					{
+						"notice": "Thrown when `owner` argument does not match owner found at index."
+					}
+				]
+			},
+			"events": {
+				"AddOwner(uint256,bytes)": {
+					"notice": "Emitted when a new owner is registered."
+				},
+				"RemoveOwner(uint256,bytes)": {
+					"notice": "Emitted when an owner is removed."
+				}
+			},
+			"kind": "user",
+			"methods": {
+				"addOwnerAddress(address)": {
+					"notice": "Adds a new Ethereum-address owner."
+				},
+				"addOwnerPublicKey(bytes32,bytes32)": {
+					"notice": "Adds a new public-key owner."
+				},
+				"isOwnerAddress(address)": {
+					"notice": "Checks if the given `account` address is registered as owner."
+				},
+				"isOwnerBytes(bytes)": {
+					"notice": "Checks if the given `account` bytes is registered as owner."
+				},
+				"isOwnerPublicKey(bytes32,bytes32)": {
+					"notice": "Checks if the given `x`, `y` public key is registered as owner."
+				},
+				"nextOwnerIndex()": {
+					"notice": "Returns the next index that will be used to add a new owner."
+				},
+				"ownerAtIndex(uint256)": {
+					"notice": "Returns the owner bytes at the given `index`."
+				},
+				"ownerCount()": {
+					"notice": "Returns the current number of owners"
+				},
+				"removeLastOwner(uint256,bytes)": {
+					"notice": "Removes owner at the given `index`, which should be the only current owner."
+				},
+				"removeOwnerAtIndex(uint256,bytes)": {
+					"notice": "Removes owner at the given `index`."
+				},
+				"removedOwnersCount()": {
+					"notice": "Tracks the number of owners removed"
+				}
+			},
+			"notice": "Auth contract allowing multiple owners, each identified as bytes.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/MultiOwnable.sol": "MultiOwnable"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/MultiOwnable.sol": {
+			"keccak256": "0x5d7763c89efcbfc8e139daceb1d9908ad181b242c0f20e0cf89271b9a3355a59",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://8f8b62a1ab549680497eaa8af1f91eac05a52404903213eb9d0356d349e3e15f",
+				"dweb:/ipfs/QmTws27kzakWALcGPEqpsRVtqJFKJeUVCUj5TbM2N81Wu6"
+			]
+		}
+	},
+	"version": 1
+}

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.23;
 
-import {IAccount} from "account-abstraction/interfaces/IAccount.sol";
+import {IAccount} from "./IAccount.sol";
 
-import {UserOperation, UserOperationLib} from "account-abstraction/interfaces/UserOperation.sol";
-import {Receiver} from "solady/accounts/Receiver.sol";
-import {SignatureCheckerLib} from "solady/utils/SignatureCheckerLib.sol";
-import {UUPSUpgradeable} from "solady/utils/UUPSUpgradeable.sol";
-import {WebAuthn} from "webauthn-sol/WebAuthn.sol";
+import {UserOperation, UserOperationLib} from "./UserOperation.sol";
+import {Receiver} from "./Receiver.sol";
+import {SignatureCheckerLib} from "./SignatureCheckerLib.sol";
+import {UUPSUpgradeable} from "./UUPSUpgradeable.sol";
+import {WebAuthn} from "./WebAuthn.sol";
 
 import {ERC1271} from "./ERC1271.sol";
 import {MultiOwnable} from "./MultiOwnable.sol";

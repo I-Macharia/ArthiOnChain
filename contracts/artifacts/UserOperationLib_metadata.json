@@ -1,0 +1,54 @@
+{
+	"compiler": {
+		"version": "0.8.23+commit.f704f362"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"notice": "Utility functions helpful when working with UserOperation structs.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/UserOperation.sol": "UserOperationLib"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/Helpers.sol": {
+			"keccak256": "0xe4a7b0563e1a7a37fc4f2412ef4402348aad2c353c476ac40d62346c35f7ab42",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://efea170c47ad6f28715b6037b38d34851e724b3cafebd81f3706fd7822c2d178",
+				"dweb:/ipfs/QmPapAstYXFbKCaqxUtKhwbbXxwdt6JAY5tcYEPaeuEidv"
+			]
+		},
+		"contracts/UserOperation.sol": {
+			"keccak256": "0xb22464b044343da36b79fea8e60a5e708bfc81d59f922f706b6e8a9091dd7df3",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://00985d246ecd65fed1cc768583570bfb84315c9f4bad13275074f3c7ea3a3c9d",
+				"dweb:/ipfs/QmUmSU8LbAcVRMC7JTDfy7bSXNnyA69Qzc6DEaHqi7UKxa"
+			]
+		}
+	},
+	"version": 1
+}

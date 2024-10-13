@@ -1,0 +1,119 @@
+{
+	"deploy": {
+		"VM:-": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"main:1": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"ropsten:3": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"rinkeby:4": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"kovan:42": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"goerli:5": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		},
+		"Custom": {
+			"linkReferences": {},
+			"autoDeployLib": true
+		}
+	},
+	"data": {
+		"bytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"linkReferences": {},
+			"object": "6055604b600b8282823980515f1a607314603f577f4e487b71000000000000000000000000000000000000000000000000000000005f525f60045260245ffd5b305f52607381538281f3fe730000000000000000000000000000000000000000301460806040525f80fdfea26469706673582212204901b41a293905ac2e892c3ee74a2a9701720529eb319658dd683f6a0e53954164736f6c634300081a0033",
+			"opcodes": "PUSH1 0x55 PUSH1 0x4B PUSH1 0xB DUP3 DUP3 DUP3 CODECOPY DUP1 MLOAD PUSH0 BYTE PUSH1 0x73 EQ PUSH1 0x3F JUMPI PUSH32 0x4E487B7100000000000000000000000000000000000000000000000000000000 PUSH0 MSTORE PUSH0 PUSH1 0x4 MSTORE PUSH1 0x24 PUSH0 REVERT JUMPDEST ADDRESS PUSH0 MSTORE PUSH1 0x73 DUP2 MSTORE8 DUP3 DUP2 RETURN INVALID PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 BLOBHASH ADD 0xB4 BYTE 0x29 CODECOPY SDIV 0xAC 0x2E DUP10 0x2C RETURNDATACOPY 0xE7 BLOBBASEFEE 0x2A SWAP8 ADD PUSH19 0x529EB319658DD683F6A0E53954164736F6C63 NUMBER STOP ADDMOD BYTE STOP CALLER ",
+			"sourceMap": "2162:70863:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"
+		},
+		"deployedBytecode": {
+			"functionDebugData": {},
+			"generatedSources": [],
+			"immutableReferences": {},
+			"linkReferences": {},
+			"object": "730000000000000000000000000000000000000000301460806040525f80fdfea26469706673582212204901b41a293905ac2e892c3ee74a2a9701720529eb319658dd683f6a0e53954164736f6c634300081a0033",
+			"opcodes": "PUSH20 0x0 ADDRESS EQ PUSH1 0x80 PUSH1 0x40 MSTORE PUSH0 DUP1 REVERT INVALID LOG2 PUSH5 0x6970667358 0x22 SLT KECCAK256 BLOBHASH ADD 0xB4 BYTE 0x29 CODECOPY SDIV 0xAC 0x2E DUP10 0x2C RETURNDATACOPY 0xE7 BLOBBASEFEE 0x2A SWAP8 ADD PUSH19 0x529EB319658DD683F6A0E53954164736F6C63 NUMBER STOP ADDMOD BYTE STOP CALLER ",
+			"sourceMap": "2162:70863:0:-:0;;;;;;;;"
+		},
+		"gasEstimates": {
+			"creation": {
+				"codeDepositCost": "17000",
+				"executionCost": "92",
+				"totalCost": "17092"
+			},
+			"internal": {
+				"checkStartsWith(bytes32,address)": "infinite",
+				"clone(address)": "infinite",
+				"clone(address,bytes memory)": "infinite",
+				"clone(uint256,address)": "infinite",
+				"clone(uint256,address,bytes memory)": "infinite",
+				"cloneDeterministic(address,bytes memory,bytes32)": "infinite",
+				"cloneDeterministic(address,bytes32)": "infinite",
+				"cloneDeterministic(uint256,address,bytes memory,bytes32)": "infinite",
+				"cloneDeterministic(uint256,address,bytes32)": "infinite",
+				"cloneDeterministic_PUSH0(address,bytes32)": "infinite",
+				"cloneDeterministic_PUSH0(uint256,address,bytes32)": "infinite",
+				"clone_PUSH0(address)": "infinite",
+				"clone_PUSH0(uint256,address)": "infinite",
+				"createDeterministicERC1967(address,bytes32)": "infinite",
+				"createDeterministicERC1967(uint256,address,bytes32)": "infinite",
+				"createDeterministicERC1967I(address,bytes32)": "infinite",
+				"createDeterministicERC1967I(uint256,address,bytes32)": "infinite",
+				"deployDeterministicERC1967(address,bytes32)": "infinite",
+				"deployDeterministicERC1967(uint256,address,bytes32)": "infinite",
+				"deployDeterministicERC1967I(address,bytes32)": "infinite",
+				"deployDeterministicERC1967I(uint256,address,bytes32)": "infinite",
+				"deployERC1967(address)": "infinite",
+				"deployERC1967(uint256,address)": "infinite",
+				"deployERC1967I(address)": "infinite",
+				"deployERC1967I(uint256,address)": "infinite",
+				"initCode(address)": "infinite",
+				"initCode(address,bytes memory)": "infinite",
+				"initCodeERC1967(address)": "infinite",
+				"initCodeERC1967I(address)": "infinite",
+				"initCodeHash(address)": "infinite",
+				"initCodeHash(address,bytes memory)": "infinite",
+				"initCodeHashERC1967(address)": "infinite",
+				"initCodeHashERC1967I(address)": "infinite",
+				"initCodeHash_PUSH0(address)": "infinite",
+				"initCode_PUSH0(address)": "infinite",
+				"predictDeterministicAddress(address,bytes memory,bytes32,address)": "infinite",
+				"predictDeterministicAddress(address,bytes32,address)": "infinite",
+				"predictDeterministicAddress(bytes32,bytes32,address)": "infinite",
+				"predictDeterministicAddressERC1967(address,bytes32,address)": "infinite",
+				"predictDeterministicAddressERC1967I(address,bytes32,address)": "infinite",
+				"predictDeterministicAddress_PUSH0(address,bytes32,address)": "infinite"
+			}
+		},
+		"methodIdentifiers": {}
+	},
+	"abi": [
+		{
+			"inputs": [],
+			"name": "DeploymentFailed",
+			"type": "error"
+		},
+		{
+			"inputs": [],
+			"name": "ETHTransferFailed",
+			"type": "error"
+		},
+		{
+			"inputs": [],
+			"name": "SaltDoesNotStartWith",
+			"type": "error"
+		}
+	]
+}

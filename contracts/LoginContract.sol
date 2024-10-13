@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.23;
 
-import "./CoinbaseSmartWallet.sol";
-import "./MultiOwnable.sol";
-import "./WebAuthn.sol";
-
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+// Import the BaseSmartWallet contract or interface
+import "./BaseSmartWallet.sol"; // Adjust this path as needed
 
 contract LoginContract {
     // Mapping of user addresses to registration status
@@ -29,16 +28,7 @@ contract LoginContract {
     }
 
     // Function to check if a user is registered
-    function isUserRegistered() public view returns (bool) {
-        // Get the BASE smart wallet instance
-        BaseSmartWallet smartWallet = BaseSmartWallet(address(this));
-
-        // Check if the user is registered using the BASE smart wallet
-        return smartWallet.isRegistered(msg.sender);
-    }
-
-    // Function to check if a user is registered
-    function isRegistered(address userAddress) public view returns (bool) {
+    function checkRegistration(address userAddress) public view returns (bool) {
         // Get the BASE smart wallet instance
         BaseSmartWallet smartWallet = BaseSmartWallet(address(this));
 

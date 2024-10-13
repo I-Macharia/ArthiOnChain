@@ -1,0 +1,539 @@
+{
+	"id": "596f6cda1e0a3ea696dbcb3aa9035880",
+	"_format": "hh-sol-build-info-1",
+	"solcVersion": "0.8.23",
+	"solcLongVersion": "0.8.23+commit.f704f362",
+	"input": {
+		"language": "Solidity",
+		"sources": {
+			"contracts/Receiver.sol": {
+				"content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.4;\n\n/// @notice Receiver mixin for ETH and safe-transferred ERC721 and ERC1155 tokens.\n/// @author Solady (https://github.com/Vectorized/solady/blob/main/src/accounts/Receiver.sol)\n///\n/// @dev Note:\n/// - Handles all ERC721 and ERC1155 token safety callbacks.\n/// - Collapses function table gas overhead and code size.\n/// - Utilizes fallback so unknown calldata will pass on.\nabstract contract Receiver {\n    /// @dev For receiving ETH.\n    receive() external payable virtual {}\n\n    /// @dev Fallback function with the `receiverFallback` modifier.\n    fallback() external payable virtual receiverFallback {}\n\n    /// @dev Modifier for the fallback function to handle token callbacks.\n    modifier receiverFallback() virtual {\n        /// @solidity memory-safe-assembly\n        assembly {\n            let s := shr(224, calldataload(0))\n            // 0x150b7a02: `onERC721Received(address,address,uint256,bytes)`.\n            // 0xf23a6e61: `onERC1155Received(address,address,uint256,uint256,bytes)`.\n            // 0xbc197c81: `onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)`.\n            if or(eq(s, 0x150b7a02), or(eq(s, 0xf23a6e61), eq(s, 0xbc197c81))) {\n                mstore(0x20, s) // Store `msg.sig`.\n                return(0x3c, 0x20) // Return `msg.sig`.\n            }\n        }\n        _;\n    }\n}"
+			}
+		},
+		"settings": {
+			"optimizer": {
+				"enabled": false,
+				"runs": 200
+			},
+			"outputSelection": {
+				"*": {
+					"": [
+						"ast"
+					],
+					"*": [
+						"abi",
+						"metadata",
+						"devdoc",
+						"userdoc",
+						"storageLayout",
+						"evm.legacyAssembly",
+						"evm.bytecode",
+						"evm.deployedBytecode",
+						"evm.methodIdentifiers",
+						"evm.gasEstimates",
+						"evm.assembly"
+					]
+				}
+			},
+			"remappings": []
+		}
+	},
+	"output": {
+		"contracts": {
+			"contracts/Receiver.sol": {
+				"Receiver": {
+					"abi": [
+						{
+							"stateMutability": "payable",
+							"type": "fallback"
+						},
+						{
+							"stateMutability": "payable",
+							"type": "receive"
+						}
+					],
+					"devdoc": {
+						"author": "Solady (https://github.com/Vectorized/solady/blob/main/src/accounts/Receiver.sol)",
+						"details": "Note: - Handles all ERC721 and ERC1155 token safety callbacks. - Collapses function table gas overhead and code size. - Utilizes fallback so unknown calldata will pass on.",
+						"kind": "dev",
+						"methods": {},
+						"version": 1
+					},
+					"evm": {
+						"assembly": "",
+						"bytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"deployedBytecode": {
+							"functionDebugData": {},
+							"generatedSources": [],
+							"immutableReferences": {},
+							"linkReferences": {},
+							"object": "",
+							"opcodes": "",
+							"sourceMap": ""
+						},
+						"gasEstimates": null,
+						"legacyAssembly": null,
+						"methodIdentifiers": {}
+					},
+					"metadata": "{\"compiler\":{\"version\":\"0.8.23+commit.f704f362\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"stateMutability\":\"payable\",\"type\":\"fallback\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"author\":\"Solady (https://github.com/Vectorized/solady/blob/main/src/accounts/Receiver.sol)\",\"details\":\"Note: - Handles all ERC721 and ERC1155 token safety callbacks. - Collapses function table gas overhead and code size. - Utilizes fallback so unknown calldata will pass on.\",\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"Receiver mixin for ETH and safe-transferred ERC721 and ERC1155 tokens.\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/Receiver.sol\":\"Receiver\"},\"evmVersion\":\"shanghai\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/Receiver.sol\":{\"keccak256\":\"0xd366055b70cd198a68ff007570b0e56e243ab7cd6ef3efaf01d762e6cf56ef0e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d1b023618b90e36ee28b68f9757d9800fb387eeb0cba0568dd8fcb37c54189c3\",\"dweb:/ipfs/QmaXfYW44NWjnTkAaiWQam7WQ4aaFdtbgySWGdVKUBoPjJ\"]}},\"version\":1}",
+					"storageLayout": {
+						"storage": [],
+						"types": null
+					},
+					"userdoc": {
+						"kind": "user",
+						"methods": {},
+						"notice": "Receiver mixin for ETH and safe-transferred ERC721 and ERC1155 tokens.",
+						"version": 1
+					}
+				}
+			}
+		},
+		"sources": {
+			"contracts/Receiver.sol": {
+				"ast": {
+					"absolutePath": "contracts/Receiver.sol",
+					"exportedSymbols": {
+						"Receiver": [
+							21
+						]
+					},
+					"id": 22,
+					"license": "MIT",
+					"nodeType": "SourceUnit",
+					"nodes": [
+						{
+							"id": 1,
+							"literals": [
+								"solidity",
+								"^",
+								"0.8",
+								".4"
+							],
+							"nodeType": "PragmaDirective",
+							"src": "32:23:0"
+						},
+						{
+							"abstract": true,
+							"baseContracts": [],
+							"canonicalName": "Receiver",
+							"contractDependencies": [],
+							"contractKind": "contract",
+							"documentation": {
+								"id": 2,
+								"nodeType": "StructuredDocumentation",
+								"src": "57:374:0",
+								"text": "@notice Receiver mixin for ETH and safe-transferred ERC721 and ERC1155 tokens.\n @author Solady (https://github.com/Vectorized/solady/blob/main/src/accounts/Receiver.sol)\n @dev Note:\n - Handles all ERC721 and ERC1155 token safety callbacks.\n - Collapses function table gas overhead and code size.\n - Utilizes fallback so unknown calldata will pass on."
+							},
+							"fullyImplemented": true,
+							"id": 21,
+							"linearizedBaseContracts": [
+								21
+							],
+							"name": "Receiver",
+							"nameLocation": "449:8:0",
+							"nodeType": "ContractDefinition",
+							"nodes": [
+								{
+									"body": {
+										"id": 6,
+										"nodeType": "Block",
+										"src": "531:2:0",
+										"statements": []
+									},
+									"documentation": {
+										"id": 3,
+										"nodeType": "StructuredDocumentation",
+										"src": "464:27:0",
+										"text": "@dev For receiving ETH."
+									},
+									"id": 7,
+									"implemented": true,
+									"kind": "receive",
+									"modifiers": [],
+									"name": "",
+									"nameLocation": "-1:-1:-1",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 4,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "503:2:0"
+									},
+									"returnParameters": {
+										"id": 5,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "531:0:0"
+									},
+									"scope": 21,
+									"src": "496:37:0",
+									"stateMutability": "payable",
+									"virtual": true,
+									"visibility": "external"
+								},
+								{
+									"body": {
+										"id": 13,
+										"nodeType": "Block",
+										"src": "661:2:0",
+										"statements": []
+									},
+									"documentation": {
+										"id": 8,
+										"nodeType": "StructuredDocumentation",
+										"src": "539:64:0",
+										"text": "@dev Fallback function with the `receiverFallback` modifier."
+									},
+									"id": 14,
+									"implemented": true,
+									"kind": "fallback",
+									"modifiers": [
+										{
+											"id": 11,
+											"kind": "modifierInvocation",
+											"modifierName": {
+												"id": 10,
+												"name": "receiverFallback",
+												"nameLocations": [
+													"644:16:0"
+												],
+												"nodeType": "IdentifierPath",
+												"referencedDeclaration": 20,
+												"src": "644:16:0"
+											},
+											"nodeType": "ModifierInvocation",
+											"src": "644:16:0"
+										}
+									],
+									"name": "",
+									"nameLocation": "-1:-1:-1",
+									"nodeType": "FunctionDefinition",
+									"parameters": {
+										"id": 9,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "616:2:0"
+									},
+									"returnParameters": {
+										"id": 12,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "661:0:0"
+									},
+									"scope": 21,
+									"src": "608:55:0",
+									"stateMutability": "payable",
+									"virtual": true,
+									"visibility": "external"
+								},
+								{
+									"body": {
+										"id": 19,
+										"nodeType": "Block",
+										"src": "780:601:0",
+										"statements": [
+											{
+												"AST": {
+													"nativeSrc": "842:522:0",
+													"nodeType": "YulBlock",
+													"src": "842:522:0",
+													"statements": [
+														{
+															"nativeSrc": "856:34:0",
+															"nodeType": "YulVariableDeclaration",
+															"src": "856:34:0",
+															"value": {
+																"arguments": [
+																	{
+																		"kind": "number",
+																		"nativeSrc": "869:3:0",
+																		"nodeType": "YulLiteral",
+																		"src": "869:3:0",
+																		"type": "",
+																		"value": "224"
+																	},
+																	{
+																		"arguments": [
+																			{
+																				"kind": "number",
+																				"nativeSrc": "887:1:0",
+																				"nodeType": "YulLiteral",
+																				"src": "887:1:0",
+																				"type": "",
+																				"value": "0"
+																			}
+																		],
+																		"functionName": {
+																			"name": "calldataload",
+																			"nativeSrc": "874:12:0",
+																			"nodeType": "YulIdentifier",
+																			"src": "874:12:0"
+																		},
+																		"nativeSrc": "874:15:0",
+																		"nodeType": "YulFunctionCall",
+																		"src": "874:15:0"
+																	}
+																],
+																"functionName": {
+																	"name": "shr",
+																	"nativeSrc": "865:3:0",
+																	"nodeType": "YulIdentifier",
+																	"src": "865:3:0"
+																},
+																"nativeSrc": "865:25:0",
+																"nodeType": "YulFunctionCall",
+																"src": "865:25:0"
+															},
+															"variables": [
+																{
+																	"name": "s",
+																	"nativeSrc": "860:1:0",
+																	"nodeType": "YulTypedName",
+																	"src": "860:1:0",
+																	"type": ""
+																}
+															]
+														},
+														{
+															"body": {
+																"nativeSrc": "1231:123:0",
+																"nodeType": "YulBlock",
+																"src": "1231:123:0",
+																"statements": [
+																	{
+																		"expression": {
+																			"arguments": [
+																				{
+																					"kind": "number",
+																					"nativeSrc": "1256:4:0",
+																					"nodeType": "YulLiteral",
+																					"src": "1256:4:0",
+																					"type": "",
+																					"value": "0x20"
+																				},
+																				{
+																					"name": "s",
+																					"nativeSrc": "1262:1:0",
+																					"nodeType": "YulIdentifier",
+																					"src": "1262:1:0"
+																				}
+																			],
+																			"functionName": {
+																				"name": "mstore",
+																				"nativeSrc": "1249:6:0",
+																				"nodeType": "YulIdentifier",
+																				"src": "1249:6:0"
+																			},
+																			"nativeSrc": "1249:15:0",
+																			"nodeType": "YulFunctionCall",
+																			"src": "1249:15:0"
+																		},
+																		"nativeSrc": "1249:15:0",
+																		"nodeType": "YulExpressionStatement",
+																		"src": "1249:15:0"
+																	},
+																	{
+																		"expression": {
+																			"arguments": [
+																				{
+																					"kind": "number",
+																					"nativeSrc": "1308:4:0",
+																					"nodeType": "YulLiteral",
+																					"src": "1308:4:0",
+																					"type": "",
+																					"value": "0x3c"
+																				},
+																				{
+																					"kind": "number",
+																					"nativeSrc": "1314:4:0",
+																					"nodeType": "YulLiteral",
+																					"src": "1314:4:0",
+																					"type": "",
+																					"value": "0x20"
+																				}
+																			],
+																			"functionName": {
+																				"name": "return",
+																				"nativeSrc": "1301:6:0",
+																				"nodeType": "YulIdentifier",
+																				"src": "1301:6:0"
+																			},
+																			"nativeSrc": "1301:18:0",
+																			"nodeType": "YulFunctionCall",
+																			"src": "1301:18:0"
+																		},
+																		"nativeSrc": "1301:18:0",
+																		"nodeType": "YulExpressionStatement",
+																		"src": "1301:18:0"
+																	}
+																]
+															},
+															"condition": {
+																"arguments": [
+																	{
+																		"arguments": [
+																			{
+																				"name": "s",
+																				"nativeSrc": "1173:1:0",
+																				"nodeType": "YulIdentifier",
+																				"src": "1173:1:0"
+																			},
+																			{
+																				"kind": "number",
+																				"nativeSrc": "1176:10:0",
+																				"nodeType": "YulLiteral",
+																				"src": "1176:10:0",
+																				"type": "",
+																				"value": "0x150b7a02"
+																			}
+																		],
+																		"functionName": {
+																			"name": "eq",
+																			"nativeSrc": "1170:2:0",
+																			"nodeType": "YulIdentifier",
+																			"src": "1170:2:0"
+																		},
+																		"nativeSrc": "1170:17:0",
+																		"nodeType": "YulFunctionCall",
+																		"src": "1170:17:0"
+																	},
+																	{
+																		"arguments": [
+																			{
+																				"arguments": [
+																					{
+																						"name": "s",
+																						"nativeSrc": "1195:1:0",
+																						"nodeType": "YulIdentifier",
+																						"src": "1195:1:0"
+																					},
+																					{
+																						"kind": "number",
+																						"nativeSrc": "1198:10:0",
+																						"nodeType": "YulLiteral",
+																						"src": "1198:10:0",
+																						"type": "",
+																						"value": "0xf23a6e61"
+																					}
+																				],
+																				"functionName": {
+																					"name": "eq",
+																					"nativeSrc": "1192:2:0",
+																					"nodeType": "YulIdentifier",
+																					"src": "1192:2:0"
+																				},
+																				"nativeSrc": "1192:17:0",
+																				"nodeType": "YulFunctionCall",
+																				"src": "1192:17:0"
+																			},
+																			{
+																				"arguments": [
+																					{
+																						"name": "s",
+																						"nativeSrc": "1214:1:0",
+																						"nodeType": "YulIdentifier",
+																						"src": "1214:1:0"
+																					},
+																					{
+																						"kind": "number",
+																						"nativeSrc": "1217:10:0",
+																						"nodeType": "YulLiteral",
+																						"src": "1217:10:0",
+																						"type": "",
+																						"value": "0xbc197c81"
+																					}
+																				],
+																				"functionName": {
+																					"name": "eq",
+																					"nativeSrc": "1211:2:0",
+																					"nodeType": "YulIdentifier",
+																					"src": "1211:2:0"
+																				},
+																				"nativeSrc": "1211:17:0",
+																				"nodeType": "YulFunctionCall",
+																				"src": "1211:17:0"
+																			}
+																		],
+																		"functionName": {
+																			"name": "or",
+																			"nativeSrc": "1189:2:0",
+																			"nodeType": "YulIdentifier",
+																			"src": "1189:2:0"
+																		},
+																		"nativeSrc": "1189:40:0",
+																		"nodeType": "YulFunctionCall",
+																		"src": "1189:40:0"
+																	}
+																],
+																"functionName": {
+																	"name": "or",
+																	"nativeSrc": "1167:2:0",
+																	"nodeType": "YulIdentifier",
+																	"src": "1167:2:0"
+																},
+																"nativeSrc": "1167:63:0",
+																"nodeType": "YulFunctionCall",
+																"src": "1167:63:0"
+															},
+															"nativeSrc": "1164:190:0",
+															"nodeType": "YulIf",
+															"src": "1164:190:0"
+														}
+													]
+												},
+												"documentation": "@solidity memory-safe-assembly",
+												"evmVersion": "shanghai",
+												"externalReferences": [],
+												"id": 17,
+												"nodeType": "InlineAssembly",
+												"src": "833:531:0"
+											},
+											{
+												"id": 18,
+												"nodeType": "PlaceholderStatement",
+												"src": "1373:1:0"
+											}
+										]
+									},
+									"documentation": {
+										"id": 15,
+										"nodeType": "StructuredDocumentation",
+										"src": "669:70:0",
+										"text": "@dev Modifier for the fallback function to handle token callbacks."
+									},
+									"id": 20,
+									"name": "receiverFallback",
+									"nameLocation": "753:16:0",
+									"nodeType": "ModifierDefinition",
+									"parameters": {
+										"id": 16,
+										"nodeType": "ParameterList",
+										"parameters": [],
+										"src": "769:2:0"
+									},
+									"src": "744:637:0",
+									"virtual": true,
+									"visibility": "internal"
+								}
+							],
+							"scope": 22,
+							"src": "431:952:0",
+							"usedErrors": [],
+							"usedEvents": []
+						}
+					],
+					"src": "32:1351:0"
+				},
+				"id": 0
+			}
+		}
+	}
+}

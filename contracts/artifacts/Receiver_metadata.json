@@ -1,0 +1,57 @@
+{
+	"compiler": {
+		"version": "0.8.23+commit.f704f362"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"stateMutability": "payable",
+				"type": "fallback"
+			},
+			{
+				"stateMutability": "payable",
+				"type": "receive"
+			}
+		],
+		"devdoc": {
+			"author": "Solady (https://github.com/Vectorized/solady/blob/main/src/accounts/Receiver.sol)",
+			"details": "Note: - Handles all ERC721 and ERC1155 token safety callbacks. - Collapses function table gas overhead and code size. - Utilizes fallback so unknown calldata will pass on.",
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"notice": "Receiver mixin for ETH and safe-transferred ERC721 and ERC1155 tokens.",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/Receiver.sol": "Receiver"
+		},
+		"evmVersion": "shanghai",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/Receiver.sol": {
+			"keccak256": "0xd366055b70cd198a68ff007570b0e56e243ab7cd6ef3efaf01d762e6cf56ef0e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d1b023618b90e36ee28b68f9757d9800fb387eeb0cba0568dd8fcb37c54189c3",
+				"dweb:/ipfs/QmaXfYW44NWjnTkAaiWQam7WQ4aaFdtbgySWGdVKUBoPjJ"
+			]
+		}
+	},
+	"version": 1
+}
