@@ -1,27 +1,26 @@
-import { http, cookieStorage, createConfig, createStorage } from 'wagmi'
-import { base } from 'wagmi/chains'
-import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors'
+// wagmi.ts
+import { http, createConfig } from 'wagmi';
+import { baseSepolia } from 'wagmi/chains';
+import { coinbaseWallet } from 'wagmi/connectors';
 
-export function getConfig() {
-  return createConfig({
-    chains: [base],
-    connectors: [
-      injected(),
-      coinbaseWallet(),
-      walletConnect({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID || 'default_project_id' }),
-    ],
-    storage: createStorage({
-      storage: cookieStorage,
+export const config = createConfig({
+  chains: [baseSepolia],
+  connectors: [
+    coinbaseWallet({
+      appName: 'Create Wagmi',
+      preference: 'smartWalletOnly',
     }),
-    ssr: true,
-    transports: {
-      [base.id]: http(),
-    },
-  })
-}
+  ],
+  transports: {
+    [baseSepolia.id]: http(),
+  },
+});
+
+// Create and export the getConfig function
+export const getConfig = () => config;
 
 declare module 'wagmi' {
   interface Register {
-    config: ReturnType<typeof getConfig>
+    config: typeof config;
   }
 }

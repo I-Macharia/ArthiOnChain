@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.23;
 
-import "https://github.com/I-Macharia/smart-wallet/blob/main/src/CoinbaseSmartWallet.sol";
-import "https://github.com/I-Macharia/smart-wallet/blob/main/src/MultiOwnable.sol";
-import "https://github.com/I-Macharia/webauthn-sol/blob/main/src/WebAuthn.sol";
-import "./lib/solady/utils/LibString.sol";
+import "./CoinbaseSmartWallet.sol";
+import "./MultiOwnable.sol";
+import "./WebAuthn.sol";
+
 
 contract LoginContract {
     // Mapping of user addresses to registration status

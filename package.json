@@ -14,8 +14,9 @@
     "next": "^14.2.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "solady": "^0.0.254",
     "viem": "latest",
-    "wagmi": "latest"
+    "wagmi": "^0.9.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
@@ -29,9 +30,9 @@
     "bufferutil": "^4.0.8",
     "chai": "^5.1.1",
     "encoding": "^0.1.13",
-    "ethereum-waffle": "^4.0.10",
+    "ethereum-waffle": "^2.2.0",
     "ethers": "^6.13.3",
-    "hardhat": "^2.22.13",
+    "hardhat": "^0.0.7",
     "lokijs": "^1.5.12",
     "pino-pretty": "^10.3.1",
     "supports-color": "^9.4.0",
