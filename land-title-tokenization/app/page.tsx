@@ -8,7 +8,7 @@ export default function Home() {
       <header className="px-4 lg:px-6 h-16 flex items-center border-b">
         <Link className="flex items-center justify-center" href="/">
           <FileCheck className="h-6 w-6 text-primary" />
-          <span className="ml-2 text-xl font-bold">LandChain</span>
+          <span className="ml-2 text-xl font-bold">ArdhiChain</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
           <Link className="text-sm font-medium hover:underline underline-offset-4" href="#features">
@@ -57,7 +57,7 @@ export default function Home() {
                   alt="Land Registry Illustration"
                   className="aspect-video overflow-hidden rounded-xl object-cover object-center"
                   height="310"
-                  src="/placeholder.svg?height=310&width=550"
+                  src="./logo.jpeg"
                   width="550"
                 />
               </div>

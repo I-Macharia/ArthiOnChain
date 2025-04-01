@@ -28,7 +28,7 @@ export default function DashboardPage() {
       <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
         <Link className="flex items-center gap-2 font-semibold" href="/">
           <FileCheck className="h-6 w-6 text-primary" />
-          <span>LandChain</span>
+          <span>ArdhiChain</span>
         </Link>
         <nav className="hidden flex-1 md:flex">
           <Link
@@ -163,7 +163,7 @@ export default function DashboardPage() {
       <footer className="border-t bg-muted/40">
         <div className="container flex flex-col items-center justify-between gap-4 py-4 md:h-16 md:flex-row md:py-0">
           <div className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} LandChain. All rights reserved.
+            © {new Date().getFullYear()} ArdhiChain. All rights reserved.
           </div>
           <nav className="flex gap-4 sm:gap-6">
             <Link className="text-xs hover:underline underline-offset-4" href="#">
