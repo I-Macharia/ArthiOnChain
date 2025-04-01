@@ -176,7 +176,7 @@ export default function Home() {
                   alt="How It Works Illustration"
                   className="aspect-video overflow-hidden rounded-xl object-cover object-center"
                   height="310"
-                  src="/placeholder.svg?height=310&width=550"
+                  src="./page.png"
                   width="550"
                 />
               </div>
