@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { FileCheck, Home, Plus, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -11,7 +12,16 @@ import { LandTitleTable } from "@/components/land-title-table"
 import { RegisterLandTitleForm } from "@/components/register-land-title-form"
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState("view")
+  const searchParams = useSearchParams()
+  const tabParam = searchParams.get("tab")
+  const [activeTab, setActiveTab] = useState(tabParam || "view")
+
+  // Update active tab when URL parameter changes
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(tabParam)
+    }
+  }, [tabParam])
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -55,17 +65,17 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold tracking-tight">Land Title Registry Dashboard</h1>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => setActiveTab("view")}>
               <Home className="mr-2 h-4 w-4" />
               View All
             </Button>
-            <Button size="sm">
+            <Button size="sm" onClick={() => setActiveTab("register")}>
               <Plus className="mr-2 h-4 w-4" />
               Register New
             </Button>
           </div>
         </div>
-        <Tabs defaultValue="view" className="space-y-4" onValueChange={setActiveTab}>
+        <Tabs value={activeTab} className="space-y-4" onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="view">View Land Titles</TabsTrigger>
             <TabsTrigger value="register">Register Land Title</TabsTrigger>

@@ -17,8 +17,8 @@ export default function Home() {
           <Link className="text-sm font-medium hover:underline underline-offset-4" href="#how-it-works">
             How It Works
           </Link>
-          <Link className="text-sm font-medium hover:underline underline-offset-4" href="/dashboard">
-            Dashboard
+          <Link className="text-sm font-medium hover:underline underline-offset-4" href="/waitlist">
+            Join Waitlist
           </Link>
         </nav>
       </header>
@@ -36,7 +36,7 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Link href="/dashboard">
+                  <Link href="/waitlist">
                     <Button className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
                       Get Started
                       <ArrowRight className="ml-2 h-4 w-4" />
@@ -57,7 +57,7 @@ export default function Home() {
                   alt="Land Registry Illustration"
                   className="aspect-video overflow-hidden rounded-xl object-cover object-center"
                   height="310"
-                  src="/logo.jpeg "     // src="/placeholder.svg?height=310&width=550"
+                  src="/placeholder.svg?height=310&width=550"
                   width="550"
                 />
               </div>
@@ -194,7 +194,7 @@ export default function Home() {
               </p>
             </div>
             <div className="flex gap-4 justify-center lg:justify-end">
-              <Link href="/dashboard">
+              <Link href="/waitlist">
                 <Button className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
                   Get Started
                 </Button>
