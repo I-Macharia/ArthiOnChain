@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.26;
 
 interface ITitleDeedToken {
     event TokenMinted(address indexed to, uint256 indexed tokenId, string documentHash);

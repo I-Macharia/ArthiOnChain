@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.26;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/ITitleDeedToken.sol";
@@ -26,10 +26,10 @@ contract LandRegistry is Ownable {
         uint256 tokenId
     );
     
-    constructor(address _titleDeedToken) Ownable(msg.sender) {
+    constructor(address initialOwner, address _titleDeedToken) Ownable(initialOwner) {
         titleDeedToken = ITitleDeedToken(_titleDeedToken);
     }
-    
+
     function registerLandTitle(
         uint256 _id,
         address _owner,
