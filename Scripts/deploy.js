@@ -1,29 +1,79 @@
-// scripts/deploy.js
+require("dotenv").config();
+const {
+  AccountId,
+  PrivateKey,
+  Client,
+  FileCreateTransaction,
+  ContractCreateTransaction,
+  Hbar,
+} = require("@hashgraph/sdk");
+const fs = require("fs");
+
 async function main() {
-  const [deployer] = await ethers.getSigners();
-  console.log("Deploying contracts with the account:", deployer.address);
+  // Load Hedera credentials from .env
+  const MY_ACCOUNT_ID = AccountId.fromString(process.env.HEDERA_ACCOUNT_ID);
+  const MY_PRIVATE_KEY = PrivateKey.fromStringECDSA(process.env.HEDERA_PRIVATE_KEY);
 
-  // Deploy TitleDeedToken
-  const TitleDeedToken = await ethers.getContractFactory("TitleDeedToken");
-  const titleDeedToken = await TitleDeedToken.deploy();
-  await titleDeedToken.waitForDeployment();
-  console.log("TitleDeedToken deployed to:", await titleDeedToken.getAddress());
+  // Initialize Hedera client
+  const client = Client.forTestnet().setOperator(MY_ACCOUNT_ID, MY_PRIVATE_KEY);
 
-  // Deploy LandRegistry
-  const LandRegistry = await ethers.getContractFactory("LandRegistry");
-  const landRegistry = await LandRegistry.deploy(deployer.address, await titleDeedToken.getAddress());
-  await landRegistry.waitForDeployment();
-  console.log("LandRegistry deployed to:", await landRegistry.getAddress());
+  console.log("Deploying contracts with account:", MY_ACCOUNT_ID.toString());
 
-  // Grant MINTER_ROLE to landRegistry
-  const MINTER_ROLE = await titleDeedToken.MINTER_ROLE();
-  await titleDeedToken.grantRole(MINTER_ROLE, await landRegistry.getAddress());
-  console.log("MINTER_ROLE granted to LandRegistry");
+  // Deploy TitleDeedTokenization contract
+  const titleDeedTokenContractId = await deployContract(
+    client,
+    "./artifacts/contracts/TitleDeedTokenization.sol/TitleDeedTokenization.json",
+    "TitleDeedTokenization"
+  );
+
+  // Deploy LandTitleRegistry contract
+  const landRegistryContractId = await deployContract(
+    client,
+    "./artifacts/contracts/LandTitleRegistry.sol/LandTitleRegistry.json",
+    "LandTitleRegistry"
+  );
+
+  // Output deployed contract IDs
+  console.log({
+    titleDeedTokenContractId: titleDeedTokenContractId.toString(),
+    landRegistryContractId: landRegistryContractId.toString(),
+  });
+}
+
+async function deployContract(client, artifactPath, contractName) {
+  console.log(`\nDeploying ${contractName}...`);
+
+  // Read the compiled bytecode
+  const contractBytecode = fs.readFileSync(artifactPath);
+  const contractBinary = JSON.parse(contractBytecode).bytecode;
+
+  // Upload the bytecode to Hedera
+  const fileTx = await new FileCreateTransaction()
+    .setContents(Buffer.from(contractBinary, "hex"))
+    .setKeys([client.operatorPublicKey])
+    .setMaxTransactionFee(new Hbar(2))
+    .execute(client);
+
+  const fileReceipt = await fileTx.getReceipt(client);
+  const bytecodeFileId = fileReceipt.fileId;
+  console.log(`${contractName} bytecode file uploaded with ID:`, bytecodeFileId);
+
+  // Deploy the contract
+  const contractTx = await new ContractCreateTransaction()
+    .setBytecodeFileId(bytecodeFileId)
+    .setGas(2000000)
+    .execute(client);
+
+  const contractReceipt = await contractTx.getReceipt(client);
+  const contractId = contractReceipt.contractId;
+  console.log(`${contractName} deployed with ID:`, contractId);
+
+  return contractId;
 }
 
 main()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error(error);
+    console.error("Error during deployment:", error);
     process.exit(1);
   });
