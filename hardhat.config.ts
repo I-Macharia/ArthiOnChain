@@ -8,7 +8,7 @@ if (!privateKey) {
 }
 
 module.exports = {
-  solidity: "0.8.26",
+  solidity: "0.8.20",
   networks: {
     "hedera-testnet": {
       url: process.env.HEDERA_TESTNET_RPC || "https://testnet.hashio.io/api",

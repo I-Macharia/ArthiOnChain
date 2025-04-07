@@ -7,8 +7,13 @@ const {
   ContractCallQuery,
   Hbar,
 } = require("@hashgraph/sdk");
+const fs = require("fs");
 
 async function main() {
+  // Load contract IDs
+  const contractIds = JSON.parse(fs.readFileSync('.contractIds.json'));
+  const titleDeedTokenContractId = contractIds.titleDeedToken;
+
   // Load Hedera credentials from .env
   const MY_ACCOUNT_ID = AccountId.fromString(process.env.HEDERA_ACCOUNT_ID);
   const MY_PRIVATE_KEY = PrivateKey.fromStringECDSA(process.env.HEDERA_PRIVATE_KEY);
@@ -16,24 +21,11 @@ async function main() {
   // Initialize Hedera client
   const client = Client.forTestnet().setOperator(MY_ACCOUNT_ID, MY_PRIVATE_KEY);
 
-  // Replace with your deployed contract IDs
-  const titleDeedTokenContractId = "0.0.xxxx";
-  const landRegistryContractId = "0.0.yyyy";
-
-  // Example: Call a function on the LandTitleRegistry contract
-  const functionName = "registerLandTitle";
-  const params = [
-    1, // Title ID
-    "0x123...", // Owner address
-    "123 Main St", // Location
-    1000, // Area
-    "QmXyZ...", // Document hash
-  ];
-
+  // Example interaction with valid contract ID
   const tx = await new ContractExecuteTransaction()
-    .setContractId(landRegistryContractId)
+    .setContractId(titleDeedTokenContractId)
     .setGas(100000)
-    .setFunction(functionName, params)
+    .setFunction("name", [])
     .execute(client);
 
   const receipt = await tx.getReceipt(client);

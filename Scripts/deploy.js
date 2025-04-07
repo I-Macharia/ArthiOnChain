@@ -8,67 +8,62 @@ const {
   Hbar,
 } = require("@hashgraph/sdk");
 const fs = require("fs");
+const path = require("path");
 
 async function main() {
-  // Load Hedera credentials from .env
   const MY_ACCOUNT_ID = AccountId.fromString(process.env.HEDERA_ACCOUNT_ID);
   const MY_PRIVATE_KEY = PrivateKey.fromStringECDSA(process.env.HEDERA_PRIVATE_KEY);
-
-  // Initialize Hedera client
   const client = Client.forTestnet().setOperator(MY_ACCOUNT_ID, MY_PRIVATE_KEY);
 
   console.log("Deploying contracts with account:", MY_ACCOUNT_ID.toString());
 
-  // Deploy TitleDeedTokenization contract
-  const titleDeedTokenContractId = await deployContract(
-    client,
-    "./artifacts/contracts/TitleDeedTokenization.sol/TitleDeedTokenization.json",
-    "TitleDeedTokenization"
-  );
+  // Get bytecode from JSON file
+  const artifactPath = path.join(__dirname, "../artifacts/contracts/TitleDeedToken.sol/TitleDeedToken.json");
+  const contractJson = require(artifactPath);
+  const {bytecode} = contractJson;
 
-  // Deploy LandTitleRegistry contract
-  const landRegistryContractId = await deployContract(
-    client,
-    "./artifacts/contracts/LandTitleRegistry.sol/LandTitleRegistry.json",
-    "LandTitleRegistry"
-  );
+  if (!bytecode) {
+    throw new Error("Bytecode not found in artifact");
+  }
 
-  // Output deployed contract IDs
-  console.log({
-    titleDeedTokenContractId: titleDeedTokenContractId.toString(),
-    landRegistryContractId: landRegistryContractId.toString(),
-  });
-}
-
-async function deployContract(client, artifactPath, contractName) {
-  console.log(`\nDeploying ${contractName}...`);
-
-  // Read the compiled bytecode
-  const contractBytecode = fs.readFileSync(artifactPath);
-  const contractBinary = JSON.parse(contractBytecode).bytecode;
-
-  // Upload the bytecode to Hedera
-  const fileTx = await new FileCreateTransaction()
-    .setContents(Buffer.from(contractBinary, "hex"))
-    .setKeys([client.operatorPublicKey])
+  console.log("Creating file for contract bytecode...");
+  const fileCreateTx = new FileCreateTransaction()
+    .setKeys([MY_PRIVATE_KEY.publicKey])
+    .setContents(bytecode)
     .setMaxTransactionFee(new Hbar(2))
-    .execute(client);
+    .freezeWith(client);
 
-  const fileReceipt = await fileTx.getReceipt(client);
-  const bytecodeFileId = fileReceipt.fileId;
-  console.log(`${contractName} bytecode file uploaded with ID:`, bytecodeFileId);
+  const fileCreateSign = await fileCreateTx.sign(MY_PRIVATE_KEY);
+  const fileCreateSubmit = await fileCreateSign.execute(client);
+  const fileCreateRx = await fileCreateSubmit.getReceipt(client);
+  const bytecodeFileId = fileCreateRx.fileId;
+  console.log(`- The bytecode file ID is: ${bytecodeFileId}`);
 
   // Deploy the contract
-  const contractTx = await new ContractCreateTransaction()
+  console.log("Deploying contract...");
+  const contractCreateTx = new ContractCreateTransaction()
     .setBytecodeFileId(bytecodeFileId)
     .setGas(2000000)
-    .execute(client);
+    .setMaxTransactionFee(new Hbar(20))
+    .freezeWith(client);
 
-  const contractReceipt = await contractTx.getReceipt(client);
-  const contractId = contractReceipt.contractId;
-  console.log(`${contractName} deployed with ID:`, contractId);
+  const contractCreateSign = await contractCreateTx.sign(MY_PRIVATE_KEY);
+  const contractCreateSubmit = await contractCreateSign.execute(client);
+  const contractCreateRx = await contractCreateSubmit.getReceipt(client);
+  const contractId = contractCreateRx.contractId;
 
-  return contractId;
+  console.log(`- The contract ID is: ${contractId}`);
+
+  // Store contract ID
+  const deploymentInfo = {
+    contractId: contractId.toString(),
+    bytecodeFileId: bytecodeFileId.toString()
+  };
+
+  fs.writeFileSync(
+    path.join(__dirname, '../.contractIds.json'),
+    JSON.stringify(deploymentInfo, null, 2)
+  );
 }
 
 main()
