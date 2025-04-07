@@ -1,51 +1,40 @@
-// scripts/interact.js
+require("dotenv").config();
+const {
+  AccountId,
+  PrivateKey,
+  Client,
+  ContractExecuteTransaction,
+  ContractCallQuery,
+  Hbar,
+} = require("@hashgraph/sdk");
+const fs = require("fs");
+
 async function main() {
-    const [owner, user1] = await ethers.getSigners();
+  // Load contract IDs
+  const contractIds = JSON.parse(fs.readFileSync('.contractIds.json'));
+  const titleDeedTokenContractId = contractIds.titleDeedToken;
 
-    // Get contract addresses from your deployment
-    const landRegistryAddress = "0x..."; // Put your deployed contract address here
-    const titleDeedTokenAddress = "0x..."; // Put your deployed contract address here
+  // Load Hedera credentials from .env
+  const MY_ACCOUNT_ID = AccountId.fromString(process.env.HEDERA_ACCOUNT_ID);
+  const MY_PRIVATE_KEY = PrivateKey.fromStringECDSA(process.env.HEDERA_PRIVATE_KEY);
 
-    // Connect to deployed contracts
-    const LandRegistry = await ethers.getContractFactory("LandRegistry");
-    const landRegistry = await LandRegistry.attach(landRegistryAddress);
+  // Initialize Hedera client
+  const client = Client.forTestnet().setOperator(MY_ACCOUNT_ID, MY_PRIVATE_KEY);
 
-    const TitleDeedToken = await ethers.getContractFactory("TitleDeedToken");
-    const titleDeedToken = await TitleDeedToken.attach(titleDeedTokenAddress);
+  // Example interaction with valid contract ID
+  const tx = await new ContractExecuteTransaction()
+    .setContractId(titleDeedTokenContractId)
+    .setGas(100000)
+    .setFunction("name", [])
+    .execute(client);
 
-    // Register a land title
-    console.log("Registering land title...");
-    const tx = await landRegistry.registerLandTitle(
-        1, // Land ID
-        user1.address, // Owner
-        "123 Main St", // Location
-        1000, // Area
-        "QmXyZ..." // Document hash
-    );
-    await tx.wait();
-    console.log("Land title registered!");
-
-    // Get land title details
-    const landTitle = await landRegistry.landTitles(1);
-    console.log("Land Title Details:");
-    console.log("  Owner:", landTitle.ownerAddress);
-    console.log("  Location:", landTitle.location);
-    console.log("  Area:", landTitle.area.toString());
-    console.log("  Document Hash:", landTitle.documentHash);
-    console.log("  Token ID:", landTitle.tokenId.toString());
-
-    // Check token ownership
-    const tokenOwner = await titleDeedToken.ownerOf(landTitle.tokenId);
-    console.log("Token Owner:", tokenOwner);
-
-    // Get document hash from token
-    const docHash = await titleDeedToken.getDocumentHash(landTitle.tokenId);
-    console.log("Document Hash from Token:", docHash);
+  const receipt = await tx.getReceipt(client);
+  console.log(`Transaction status: ${receipt.status}`);
 }
 
 main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    });
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error("Error during interaction:", error);
+    process.exit(1);
+  });
